@@ -115,6 +115,16 @@ python3 decode_sysex.py ../patches/OriginalPatches.syx
 python3 compare_patches.py file1.syx file2.syx
 ```
 
+**4. Send a SysEx file to hardware:**
+```bash
+# List MIDI outputs
+python3 tools/send_sysex.py --list-outputs
+
+# Send a .syx file (requires 'mido' + 'python-rtmidi')
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/OriginalPatches.syx \
+    --out "MS2000" --delay-ms 50
+```
+
 ## 📖 Learning Path
 
 For newcomers to MIDI and SysEx, we recommend this progression:
