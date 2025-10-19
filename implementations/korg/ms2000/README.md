@@ -137,9 +137,29 @@ Compare two SysEx files and show differences.
 python3 compare_patches.py <file1.syx> <file2.syx>
 ```
 
+### fix_sysex.py
+
+Fix broken SysEx files that won't load into hardware.
+
+**Features:**
+- Validates SysEx header
+- Removes zero padding
+- Adds missing F7 (End of Exclusive) terminator
+- Creates automatic backups
+
+**Usage:**
+```bash
+python3 fix_sysex.py <input.syx> [output.syx]
+```
+
+**Why you might need this:**
+Many MS2000 SysEx files found online are padded with zeros and missing the required F7 terminator byte. This prevents them from loading into the hardware even though they may decode correctly in software. This tool fixes the issue automatically.
+
+See [SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) for details.
+
 ## Factory Patches
 
-The included **OriginalPatches.syx** contains 124 factory presets:
+The included **OriginalPatches.syx** contains 123 factory presets (A01-H11):
 
 **Sound Categories:**
 - **Leads:** Stab Saw, Synth Tp, Killa Lead, Edge Lead
@@ -156,9 +176,9 @@ Full patch list available in [examples/original_patches_decoded.txt](examples/or
 ### File Sizes
 - Raw data: 254 bytes/patch × 128 patches = 32,512 bytes
 - After encoding: ~37,157 bytes
-- With header: 37,162 bytes total
+- With header + F7: 37,163 bytes total
 
-OriginalPatches.syx is 36,000 bytes (124 patches, incomplete bank).
+OriginalPatches.syx is 35,844 bytes (123 patches, incomplete bank).
 
 ### Device Identification
 

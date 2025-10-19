@@ -28,6 +28,8 @@ desktop.ini
 **/proprietary/
 **/*_private.*
 **/*_proprietary.*
+**/BOCPatches.syx
+BOCPatches.syx
 
 # Temporary files
 *.tmp
