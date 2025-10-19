@@ -224,7 +224,7 @@ After decoding, each patch is exactly 254 bytes:
 COMPLETE FILE LAYOUT
 ================================================================================
 
-OriginalPatches.syx (36,000 bytes total):
+Example incomplete bank (36,000 bytes total):
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ Offset  │ Content                                                           │
 ├─────────┼───────────────────────────────────────────────────────────────────┤
@@ -240,7 +240,7 @@ OriginalPatches.syx (36,000 bytes total):
 │ 0x8C9F  │ [End of file]                                                     │
 └─────────┴───────────────────────────────────────────────────────────────────┘
 
-BOCPatches.syx (37,158 bytes total):
+Example full bank (~37,163 bytes total):
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ Offset  │ Content                                                           │
 ├─────────┼───────────────────────────────────────────────────────────────────┤
@@ -319,9 +319,9 @@ With Header:
 Overhead:
   (37,162 - 32,512) ÷ 32,512 = 14.3% size increase
 
-This matches the actual file sizes observed:
-  OriginalPatches.syx: 36,000 bytes (124 patches = slightly less)
-  BOCPatches.syx: 37,158 bytes (128 patches = matches calculation!)
+Reference sizes (approximate):
+  Incomplete bank: 36,000 bytes (e.g., 124 patches)
+  Full bank: ~37,163 bytes (128 patches)
 
 
 ================================================================================

@@ -62,7 +62,7 @@ def main():
     if len(sys.argv) != 3:
         print("Usage: python compare_patches.py <file1.syx> <file2.syx>")
         print("\nExample:")
-        print("  python compare_patches.py OriginalPatches.syx BOCPatches.syx")
+        print("  python compare_patches.py file1.syx file2.syx")
         sys.exit(1)
 
     file1, file2 = sys.argv[1], sys.argv[2]

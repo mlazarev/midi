@@ -26,7 +26,7 @@ ms2000/
 │   ├── decode_sysex.py         # Decode and display SysEx files
 │   └── compare_patches.py      # Compare two SysEx files
 ├── patches/                     # Patch files
-│   └── OriginalPatches.syx     # Factory presets (124 patches)
+│   └── OriginalPatches.syx     # Factory presets (128 patches)
 └── examples/                    # Example outputs
     └── original_patches_decoded.txt  # Decoded factory patches
 ```
@@ -45,7 +45,7 @@ SysEx Header:
   Manufacturer: Korg (0x42)
   Device: MS2000 (0x58)
   Function: 0x4C (PROGRAM DATA DUMP)
-  Patches decoded: 124
+  Patches decoded: 128
 
 [A01] Stab Saw
      Mode: Single    Delay: StereoDelay   Mod: Cho/Flg     Arp: OFF

@@ -47,7 +47,7 @@ Complete SysEx decoder and tools for the Korg MS2000 virtual analog synthesizer.
 - Full SysEx file decoder with 7-to-8 bit decoding
 - Patch parameter extraction and display
 - Patch comparison tool
-- 124 factory patches included
+- 128 factory patches included (complete bank)
 - Complete MIDI implementation documentation
 
 **Quick Start:**

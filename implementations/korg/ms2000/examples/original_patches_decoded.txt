@@ -1,16 +1,16 @@
-Decoding: sysex/OriginalPatches.syx
+Decoding: implementations/korg/ms2000/patches/OriginalPatches.syx
 ============================================================
 SysEx Header:
   Manufacturer: Korg (0x42)
   MIDI Channel: 0
   Device: MS2000 (0x58)
   Function: 0x4C (PROGRAM DATA DUMP)
-  Encoded size: 35995 bytes
-  Decoded size: 31496 bytes
-  Patches decoded: 124
+  Encoded size: 37158 bytes
+  Decoded size: 32514 bytes
+  Patches decoded: 128
 
 
-Successfully decoded 124 patches
+Successfully decoded 128 patches
 
 ============================================================
 

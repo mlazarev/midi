@@ -15,7 +15,7 @@
 - [x] Full SysEx decoder with 7-to-8 bit decoding
 - [x] Patch parameter extraction (partial - basic params)
 - [x] Patch comparison tool
-- [x] Factory patches included (124 presets)
+- [x] Factory patches included (128 presets)
 - [x] Complete MIDI implementation chart
 - [x] Device-specific documentation
 - [x] Example outputs
@@ -190,7 +190,7 @@ Target: Q3 2025
 - Complete MIDI/SysEx educational documentation
 - Korg MS2000 SysEx decoder
 - Patch comparison tool
-- Factory patches (124 presets)
+- Factory patches (128 presets)
 - Quick reference guide
 - Visual structure diagrams
 - Contributing guidelines

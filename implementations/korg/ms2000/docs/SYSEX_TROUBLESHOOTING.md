@@ -28,9 +28,8 @@ ls -lh *.syx
 
 Example output:
 ```
-37,163 bytes - BOCPatches.syx (WORKS - 128 patches)
-35,844 bytes - OriginalPatches.syx (FIXED - 123 patches)
-36,000 bytes - OriginalPatches_BROKEN.syx (BROKEN - padded with zeros)
+37,163 bytes - Example full bank (WORKS - 128 patches)
+35,844 bytes - Example incomplete bank (FIXED - <128 patches)
 ```
 
 #### 2. Inspect File Endings
@@ -41,7 +40,7 @@ Check the last bytes of the file:
 tail -c 20 file.syx | xxd
 ```
 
-**Working file (BOCPatches.syx):**
+**Working file (example full bank):**
 ```
 00000000: 0140 4040 4040 0040 4040 4040 4040 0040  .@@@@@.@@@@@@@.@
 00000010: 4040 40f7                                @@@.
@@ -49,7 +48,7 @@ tail -c 20 file.syx | xxd
                    F7 - End of Exclusive (CORRECT!)
 ```
 
-**Broken file (OriginalPatches_BROKEN.syx):**
+**Broken file (example):**
 ```
 00000000: 0000 0000 0000 0000 0000 0000 0000 0000  ................
 00000010: 0000 0000                                ....
@@ -147,14 +146,21 @@ if __name__ == '__main__':
 
 ```bash
 # Backup original
-cp OriginalPatches.syx OriginalPatches_BROKEN.syx
+cp input.syx input_BACKUP.syx
 
-# Fix with Python
-python3 -c "
-data = bytearray(open('OriginalPatches.syx', 'rb').read())
-end = next(i+1 for i in range(len(data)-1, -1, -1) if data[i] != 0)
-open('OriginalPatches.syx', 'wb').write(data[:end] + b'\xF7')
-"
+# Fix with Python (generic)
+python3 - << 'PY'
+from pathlib import Path
+p = Path('input.syx')
+data = bytearray(p.read_bytes())
+if data and data[-1] != 0xF7:
+    end = next(i+1 for i in range(len(data)-1, -1, -1) if data[i] != 0)
+    fixed = data[:end] + b'\xF7'
+    p.write_bytes(fixed)
+    print(f"Fixed file: {len(fixed)} bytes; added F7 terminator")
+else:
+    print("File already ends with F7 or is empty")
+PY
 ```
 
 ### Why This Happens
@@ -203,13 +209,13 @@ Without F7, the synth doesn't know the message is complete. It may:
 python3 decode_sysex.py OriginalPatches.syx
 ```
 
-Output should show:
+Output should show (for a complete bank):
 ```
 SysEx Header:
   Manufacturer: Korg (0x42)
   Device: MS2000 (0x58)
   Function: 0x4C (PROGRAM DATA DUMP)
-  Patches decoded: 123
+  Patches decoded: 128
 
 Successfully decoded 123 patches
 ```
@@ -231,7 +237,7 @@ tail -c 1 OriginalPatches.syx | xxd
 | 124 | 31,496 bytes | ~36,132 bytes | ~36,138 bytes | 36,138 |
 | 128 | 32,512 bytes | ~37,157 bytes | ~37,163 bytes | 37,163 |
 
-**Note:** OriginalPatches only contains 123 patches, not 124!
+Note: Some files found online may contain fewer than 128 patches and will not load as a full bank.
 
 ### Common Mistakes
 
@@ -342,7 +348,7 @@ PROGRAM DATA (IN INTERNAL MEMORY) DUMP FORMAT
 If your file has fewer than 128 patches, pad it with blank/INIT patches:
 
 ```python
-# Pad OriginalPatches.syx (123 patches) to 128 patches
+# Example: Padding an incomplete bank to 128 patches (conceptual)
 # by copying 5 blank patches from another complete file
 
 # 1. Calculate bytes needed
@@ -391,9 +397,6 @@ Always verify:
 
 ---
 
-**Issue Resolved:** OriginalPatches.syx fixed by removing zero padding and adding F7 terminator.
-
-**File Status:**
-- OriginalPatches_BROKEN.syx: 36,000 bytes (broken, for reference)
-- OriginalPatches.syx: 35,844 bytes (fixed, 123 patches)
-- BOCPatches.syx: 37,163 bytes (correct, 128 patches)
+Repository note:
+- The included `implementations/korg/ms2000/patches/OriginalPatches.syx` is a complete 128‑patch bank and ends with F7.
+- If you encounter third‑party files that are padded or incomplete, apply the checks in this guide.

@@ -195,24 +195,13 @@ def decode_korg_7bit(encoded_data):
 
 ### File Structure
 
-**OriginalPatches.syx:**
+**OriginalPatches.syx (included in this repo):**
 ```
-Size: 36,000 bytes
 Structure:
   - 5 bytes: Header (F0 42 30 58 4C)
-  - 35,995 bytes: Encoded data
-  - Decoded: 31,496 bytes = 124 patches × 254 bytes
+  - ~37,158 bytes: Encoded data
+  - ~32,514 bytes decoded = 128 patches × 254 bytes (full bank)
   - Contains factory presets with names
-```
-
-**BOCPatches.syx:**
-```
-Size: 37,158 bytes
-Structure:
-  - 5 bytes: Header (F0 42 30 58 4C)
-  - 37,153 bytes: Encoded data
-  - Decoded: 32,514 bytes = 128 patches × 254 bytes (full bank)
-  - Contains custom patches (names appear blank/minimal)
 ```
 
 ### Decoding Process
@@ -264,19 +253,21 @@ See `decode_sysex.py` for complete implementation:
 ## Files in This Project
 
 ### Documentation
-- `general/docs/sysex/MIDI.pdf` - Wikipedia overview of MIDI
-- `general/docs/sysex/Everything You Ever Wanted To Know About System Exclusive.pdf` - Sound on Sound article
-- `korgms2000/docs/MS2000_MIDIimp.TXT` - Complete MIDI implementation chart
-- `korgms2000/docs/MS2000_FMIDIDef/` - FreeMIDI device definitions
+- `docs/general/LEARNING_SUMMARY.md` - This learning summary
+- `docs/general/QUICK_REFERENCE.md` - Quick lookup tables
+- `implementations/korg/ms2000/docs/MS2000_MIDIimp.TXT` - MIDI implementation chart (text)
+- `implementations/korg/ms2000/docs/SYSEX_STRUCTURE.txt` - Structure diagrams
 
 ### SysEx Files
-- `korgms2000/sysex/OriginalPatches.syx` - 124 factory patches
-- `korgms2000/sysex/BOCPatches.syx` - 128 custom patches
+- `implementations/korg/ms2000/patches/OriginalPatches.syx` - 128 factory patches (complete bank)
 
 ### Tools
-- `decode_sysex.py` - Python decoder for MS2000 SysEx files
-- `original_patches_decoded.txt` - Decoded factory patches
-- `boc_patches_decoded.txt` - Decoded custom patches
+- `implementations/korg/ms2000/tools/decode_sysex.py` - Python decoder for MS2000 SysEx files
+- `implementations/korg/ms2000/examples/original_patches_decoded.txt` - Example decoded output
+
+### External Resources
+- MIDI Association (official specs): https://www.midi.org/
+- Sound On Sound SysEx guide: https://www.soundonsound.com/techniques/using-sysex
 
 ---
 
