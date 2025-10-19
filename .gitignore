@@ -31,6 +31,11 @@ desktop.ini
 **/BOCPatches.syx
 BOCPatches.syx
 
+# Exclude local analysis artifacts and any stylistic case studies
+analysis/
+SESSION_SUMMARY.md
+docs/BOC_*.md
+
 # Temporary files
 *.tmp
 *.bak
