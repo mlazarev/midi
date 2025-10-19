@@ -321,15 +321,73 @@ When using Bome SendSX:
 - [Korg MS2000 MIDI Implementation](docs/MS2000_MIDIimp.TXT)
 - [Bome SendSX Documentation](https://www.bome.com/products/sendsx)
 
+## Issue #2: Incomplete Patch Bank (< 128 Patches)
+
+### Symptom
+File has F7 terminator and looks correct, but still won't load into MS2000 hardware.
+
+### Root Cause: MS2000 Requires Complete 128-Patch Bank
+
+**CRITICAL DISCOVERY:** When using Function 0x4C (PROGRAM DATA DUMP), the MS2000 expects **exactly 128 patches**, even if some are blank!
+
+From the MIDI Implementation (line 811-812):
+```
+PROGRAM DATA (IN INTERNAL MEMORY) DUMP FORMAT
+[Prog A01(254Bytes)],....,[Prog H16(254Bytes)]
+254*128Bytes = 32,512 bytes raw -> 37,157 bytes encoded
+```
+
+### Solution: Pad to 128 Patches
+
+If your file has fewer than 128 patches, pad it with blank/INIT patches:
+
+```python
+# Pad OriginalPatches.syx (123 patches) to 128 patches
+# by copying 5 blank patches from another complete file
+
+# 1. Calculate bytes needed
+patches_current = 123
+patches_needed = 128 - patches_current  # = 5
+bytes_needed = patches_needed * 254     # = 1,270 bytes raw
+
+# 2. Encoded size needed
+# 37,157 bytes total for 128 patches
+# ~35,838 bytes for 123 patches
+# ~1,319 bytes to add (encoded)
+
+# 3. Append blank patches to reach exactly 37,163 bytes total
+```
+
+### File Size Requirements
+
+| Patches | Raw Bytes | Encoded | With Header+F7 | Required |
+|---------|-----------|---------|----------------|----------|
+| 123 | 31,242 | ~35,838 | ~35,844 | ✗ INCOMPLETE |
+| 124 | 31,496 | ~36,132 | ~36,138 | ✗ INCOMPLETE |
+| 127 | 32,258 | ~36,987 | ~36,993 | ✗ INCOMPLETE |
+| **128** | **32,512** | **37,157** | **37,163** | **✓ COMPLETE** |
+
+**Only 128-patch files will load via Function 0x4C!**
+
+### Alternative: Use Function 0x40 (Current Program)
+
+If you want to send individual patches or incomplete banks:
+- Use Function 0x40 (CURRENT PROGRAM DATA DUMP)
+- Sends one patch at a time to edit buffer
+- Doesn't require complete bank
+
 ### Summary
 
-**The #1 cause of "SysEx won't load" problems: Missing F7 byte!**
+**Top 2 causes of "SysEx won't load" problems:**
+
+1. **Missing F7 byte** - File not properly terminated
+2. **Incomplete bank** - Less than 128 patches for Function 0x4C
 
 Always verify:
 1. ✓ File starts with F0
 2. ✓ File ends with F7
 3. ✓ No zero padding
-4. ✓ Correct file size for number of patches
+4. ✓ **Exactly 128 patches (37,163 bytes total)**
 
 ---
 
