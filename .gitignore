@@ -36,6 +36,10 @@ BOCPatches.syx
 *.bak
 *.log
 
+# Local Windows helper scripts (user-specific)
+send_boc_ms2000.bat
+send_original_ms2000.bat
+
 # Compiled/generated documentation
 *.aux
 *.fdb_latexmk

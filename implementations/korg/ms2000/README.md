@@ -22,6 +22,8 @@ ms2000/
 ├── docs/                        # Documentation
 │   ├── SYSEX_STRUCTURE.txt     # Complete SysEx format diagrams
 │   └── MS2000_MIDIimp.TXT      # Official MIDI implementation chart
+├── guides/                      # How‑to and analysis guides
+│   └── PATCH_ANALYSIS_GUIDE.md # Techniques to analyze patch banks
 ├── tools/                       # Python tools
 │   ├── decode_sysex.py         # Decode and display SysEx files
 │   ├── compare_patches.py      # Compare two SysEx files
@@ -135,6 +137,13 @@ python3 decode_sysex.py <sysex_file.syx>
 - Voice mode
 - Effects settings
 - Arpeggiator configuration
+
+### Additional Tools
+
+- Generic bank analyzer (top‑level): `tools/analyze_patch_bank.py`
+  - Summarizes name tokens, voice modes, FX usage, arpeggiator and parameter ranges
+  - Usage:
+    - `python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/OriginalPatches.syx`
 
 ### compare_patches.py
 
