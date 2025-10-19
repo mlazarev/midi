@@ -3,9 +3,11 @@
 **16 original patches created from scratch using BOC synthesis principles**
 
 Created: 2025-01-19
-Bank Size: 37,166 bytes (128 patches, A01-H16)
+Bank Size: 37,163 bytes (128 patches, A01-H16)
 Unique Patches: 16 (A01-A16)
 Filler Patches: 112 (B01-H16, repeats of "Lazy Sunday")
+
+Encoding: Korg 7-bit variant v2 (MSB of decoded byte j is stored in bit j of the MSB byte).
 
 ## Overview
 
