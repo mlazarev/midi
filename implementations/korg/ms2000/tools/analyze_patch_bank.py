@@ -7,7 +7,8 @@ MS2000 PROGRAM DATA DUMP (.syx) file and prints human‑readable stats,
 optionally JSON.
 
 Usage:
-  python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+  python implementations/korg/ms2000/tools/analyze_patch_bank.py \
+         implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 
 Options:
   --json           Output JSON instead of text

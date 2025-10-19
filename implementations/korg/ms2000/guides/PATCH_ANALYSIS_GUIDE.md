@@ -25,17 +25,17 @@ What you can learn
 How to run the analyzer
 - Use the generic analyzer (works for any MS2000 bank):
 ```
-python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
 - Optional JSON output:
 ```
-python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --json > report.json
+python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --json > report.json
 ```
 
 - Limit analysis to first N patches:
 ```
-python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 32
+python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 32
 ```
 
 Interpreting results

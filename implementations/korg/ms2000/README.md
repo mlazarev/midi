@@ -144,10 +144,10 @@ python3 decode_sysex.py <sysex_file.syx>
 
 ### Additional Tools
 
-- Generic bank analyzer (top‑level): `tools/analyze_patch_bank.py`
+- Generic bank analyzer: `implementations/korg/ms2000/tools/analyze_patch_bank.py`
   - Summarizes name tokens, voice modes, FX usage, arpeggiator and parameter ranges
   - Usage:
-    - `python tools/analyze_patch_bank.py implementations/korg/ms2000/patches/OriginalPatches.syx`
+    - `python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx`
 
 ### compare_patches.py
 
