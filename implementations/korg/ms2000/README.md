@@ -24,7 +24,8 @@ ms2000/
 │   └── MS2000_MIDIimp.TXT      # Official MIDI implementation chart
 ├── tools/                       # Python tools
 │   ├── decode_sysex.py         # Decode and display SysEx files
-│   └── compare_patches.py      # Compare two SysEx files
+│   ├── compare_patches.py      # Compare two SysEx files
+│   └── send_to_ms2000.py       # Send SysEx to MS2000/MS2000R (wrapper)
 ├── patches/                     # Patch files
 │   └── OriginalPatches.syx     # Factory presets (128 patches)
 └── examples/                    # Example outputs
@@ -147,6 +148,28 @@ Compare two SysEx files and show differences.
 **Usage:**
 ```bash
 python3 compare_patches.py <file1.syx> <file2.syx>
+```
+
+### send_to_ms2000.py
+
+Send a SysEx file to a Korg MS2000/MS2000R MIDI output port. Thin wrapper around the top‑level `tools/send_sysex.py` with sensible defaults for MS2000.
+
+Dependencies:
+- Python 3.8+
+- `mido` and `python-rtmidi` (`pip install mido python-rtmidi`)
+
+Features:
+- Defaults to `--out "MS2000"`, `--file ../patches/OriginalPatches.syx`, `--delay-ms 50`
+- Lists available MIDI outputs
+- Allows overriding output port, file, delay, and auto-fix
+
+Usage:
+```bash
+# From this tools directory
+python3 send_to_ms2000.py --list-outputs
+python3 send_to_ms2000.py                     # send bundled factory bank
+python3 send_to_ms2000.py --out "Your Port"   # choose a specific output
+python3 send_to_ms2000.py --file path\to\file.syx --delay-ms 50
 ```
 
 ### fix_sysex.py
