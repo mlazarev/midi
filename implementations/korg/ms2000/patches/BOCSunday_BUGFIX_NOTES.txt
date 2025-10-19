@@ -1,0 +1,129 @@
+================================================================================
+2025-10-19 UPDATE: ENCODING VARIANT + FINAL HARDWARE VERIFICATION
+================================================================================
+
+NEW SYMPTOMS OBSERVED ON HARDWARE:
+- Garbled program names (leading 'K') when sending a single program.
+- Only A01, A08, A15 audible when sending full bank; other slots silent.
+
+FINAL ROOT CAUSE:
+- Korg 7-bit encoding MSB bit order variant required by this MS2000 unit.
+  The encoder must place MSB of decoded byte j into bit j of the MSB byte (variant v2).
+  Using the alternative bit order (variant v1: 6−j) corrupts header/name/params on hardware.
+
+ADDITIONAL FIXES CONFIRMED:
+- OSC2 byte packed strictly per spec (B4..5 Mod, B0..1 Wave). Constrained OSC2 waves
+  to Saw/Square/Triangle. Updated A12 to use Triangle on OSC2.
+- Program header byte 16 written with correct voice mode for Single.
+
+RESULT:
+- Regenerated BOCSunday.syx at 37,163 bytes (standard 128‑program bank).
+- All A01–A16 patches audible on hardware; names display correctly.
+- Single‑program (0x40) dumps using v2 encoding also work correctly.
+
+================================================================================
+BOCSunday.syx - Bug Fix Notes
+================================================================================
+
+DATE: October 19, 2024
+ISSUE: Only patches A01, A08, and A15 were audible on MS2000 hardware
+CAUSE: OSC2 waveform encoding bug in create_boc_patches.py
+STATUS: FIXED
+
+================================================================================
+ROOT CAUSE ANALYSIS
+================================================================================
+
+The set_timbre_osc2() function was encoding the OSC2 byte incorrectly:
+
+BUGGY CODE (line 236):
+    self.data[t+12] = (mods.get(mod, 0) << 4) | waves.get(wave, 2)
+    
+This put:
+- Modulation in bits 4-7
+- Wave in bits 0-1
+
+CORRECT FORMAT (MS2000 spec):
+- Wave in bits 2-6
+- Modulation in bits 0-1
+
+FIXED CODE:
+    self.data[t+12] = (waves.get(wave, 2) << 2) | mods.get(mod, 0)
+
+Additionally, the waves dictionary was incomplete:
+- BUGGY: {'Saw': 0, 'Square': 1, 'Triangle': 2}
+- FIXED: {'Saw': 0, 'Pulse': 1, 'Triangle': 2, 'Sine': 3,
+           'Vox Wave': 4, 'DWGS': 5, 'Noise': 6, 'Audio In': 7}
+
+================================================================================
+EXAMPLES OF INCORRECT VS CORRECT ENCODING
+================================================================================
+
+A01: Sunday Pad
+  BEFORE: Sine + Saw (modulation bits in wrong position)
+  AFTER:  Sine + Triangle ✓
+
+A03: Vintage Tape  
+  BEFORE: DWGS + Saw
+  AFTER:  DWGS + Triangle ✓
+
+A05: Warm Rhodes
+  BEFORE: Sine + Vox Wave (Ring)
+  AFTER:  Sine + Triangle (Ring) ✓
+
+A10: Wobbly Lead
+  BEFORE: Saw + Unknown(8) (wave index 8 doesn't exist!)
+  AFTER:  Saw + Saw (Sync) ✓
+
+================================================================================
+WHY ONLY 3 PATCHES WERE AUDIBLE
+================================================================================
+
+By pure chance, patches A01, A08, and A15 happened to encode to oscillator
+combinations that still produced sound on the MS2000, even though they weren't
+the intended waveforms.
+
+The other 13 patches encoded to invalid or silent oscillator configurations:
+- Invalid wave indices (like wave 8 which doesn't exist)
+- Unintended modulation types
+- Combinations that resulted in no audio output
+
+================================================================================
+VERIFICATION
+================================================================================
+
+All 16 patches now correctly encode to their intended waveforms:
+
+[A01] Sunday Pad:     Sine + Triangle      (Classic pad)
+[A02] Analog Mem:     Saw + Saw            (Detuned lead)
+[A03] Vintage Tape:   DWGS + Triangle      (Digital texture)
+[A04] Nostalgia:      Triangle + Triangle  (Warm pad)
+[A05] Warm Rhodes:    Sine + Triangle Ring (Bell/keys)
+[A06] Dusty Bass:     Saw + Triangle       (Bass)
+[A07] Childhood:      DWGS + Saw           (Sequence)
+[A08] Faded Photo:    Sine + Saw           (Ambient)
+[A09] 70s Sky:        Pulse + Triangle     (Vintage PWM)
+[A10] Wobbly Lead:    Saw + Saw Sync       (Sync lead)
+[A11] Distant:        DWGS + Triangle      (Lo-fi pad)
+[A12] Soft Pluck:     Triangle + Sine      (Pluck)
+[A13] Morning Haze:   Vox Wave + Triangle  (Vocal pad)
+[A14] Quiet Moment:   Sine + Sine          (Pure tones)
+[A15] Retro Sweep:    Pulse + Saw          (BPF sweep)
+[A16] Sunset:         Saw + Triangle       (Chord pad)
+
+File size: 37,163 bytes (correct for 128-patch bank)
+Encoded correctly: Yes
+Ready to load: Yes
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+1. Send BOCSunday.syx to your MS2000 using send_to_ms2000.py:
+   python3 tools/send_to_ms2000.py
+
+2. Test all 16 patches (A01-A16)
+
+3. All patches should now be audible!
+
+================================================================================

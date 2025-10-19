@@ -163,6 +163,30 @@ else:
 PY
 ```
 
+## Problem: Garbled Names (leading 'K') or Silent Programs after Send
+
+### Symptom
+- Patch names show stray characters (often a leading 'K') when loading a single program (0x40) or a full bank (0x4C).
+- Only every 7th patch seems audible (e.g., A01, A08, A15); other patches are silent regardless of panel edits.
+
+### Root Cause
+- MS2000 uses a 7→8 bit packing for SysEx. Some units expect the MSB aggregation byte to store the MSBs in bit order variant v2: place the MSB for decoded byte j into bit j (0..6), not into bit (6−j).
+- Using the wrong variant corrupts header/name and parameter bytes, leading to silence or nonsense values that panel edits cannot fully correct.
+
+### Diagnosis
+- Export a single program (CURRENT PROGRAM DATA DUMP, 0x40) using both variants and send each:
+  - v1: MSB placed in bit (6−j)
+  - v2: MSB placed in bit j
+- The correct variant will display names properly and sound as expected.
+
+### Fix
+- Encode using variant v2 (MSB of byte j → bit j).
+- Ensure OSC2 parameter byte conforms to spec (B4..5 = Mod, B0..1 = Wave; other bits 0). Avoid illegal OSC2 waves.
+- Ensure program header byte 16 has sane values for Single mode.
+
+### Tooling
+- `tools/export_single_program.py` can generate single-program SysEx with either variant for quick testing.
+
 ### Why This Happens
 
 #### Source of Broken Files
