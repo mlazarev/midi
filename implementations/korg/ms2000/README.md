@@ -60,6 +60,18 @@ SysEx Header:
 python3 compare_patches.py file1.syx file2.syx
 ```
 
+### Send SysEx to MS2000
+```bash
+# List available MIDI outputs
+python3 send_to_ms2000.py --list-outputs
+
+# Send the bundled factory bank to a port containing "MS2000"
+python3 send_to_ms2000.py
+
+# Override port and delay (requires: pip install mido python-rtmidi)
+python3 send_to_ms2000.py --out "Your MIDI Port" --delay-ms 50
+```
+
 ## SysEx File Format
 
 ### Header Structure
