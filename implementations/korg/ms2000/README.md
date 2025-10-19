@@ -159,7 +159,9 @@ See [SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) for details.
 
 ## Factory Patches
 
-The included **OriginalPatches.syx** contains 123 factory presets (A01-H11):
+The included **OriginalPatches.syx** contains 128 patches:
+- **A01-H12 (123 patches)**: Original factory presets
+- **H13-H16 (5 patches)**: Blank placeholders to complete the bank
 
 **Sound Categories:**
 - **Leads:** Stab Saw, Synth Tp, Killa Lead, Edge Lead
@@ -178,7 +180,7 @@ Full patch list available in [examples/original_patches_decoded.txt](examples/or
 - After encoding: ~37,157 bytes
 - With header + F7: 37,163 bytes total
 
-OriginalPatches.syx is 35,844 bytes (123 patches, incomplete bank).
+OriginalPatches.syx is 37,163 bytes (128 patches, complete bank ready for hardware).
 
 ### Device Identification
 
