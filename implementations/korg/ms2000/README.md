@@ -100,7 +100,9 @@ MS2000 uses Korg's 7-to-8 bit encoding:
 - First byte of each group contains MSBs (bit 7) of next 7 bytes
 - 14.3% size overhead
 
-**Critical:** The encoding applies to the entire data block, not individual patches.
+Note: Hardware validation indicates this project uses Korg 7→8 encoding variant v2
+(the MSB of decoded byte j is stored in bit j of the MSB byte). The encoding applies
+to the entire data block for full program bank dumps (0x4C).
 
 ### Patch Structure
 
@@ -123,62 +125,53 @@ See [SYSEX_STRUCTURE.txt](docs/SYSEX_STRUCTURE.txt) for complete memory map.
 
 ### decode_sysex.py
 
-Decode MS2000 SysEx files and display patch parameters.
+Decode MS2000 SysEx (.syx) files and display patch parameters.
 
-**Features:**
 - Parses SysEx header and validates format
-- Implements 7-to-8 bit decoding algorithm
-- Extracts all patches (up to 128)
-- Displays key parameters for each patch
+- Implements Korg 7→8 decoding
+- Extracts up to 128 patches
+- Prints key parameters (mode, FX, arp)
 
-**Usage:**
+Usage:
 ```bash
-python3 decode_sysex.py <sysex_file.syx>
+cd implementations/korg/ms2000/tools
+python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
-**Output includes:**
-- Patch name
-- Voice mode
-- Effects settings
-- Arpeggiator configuration
+### analyze_patch_bank.py
 
-### Additional Tools
+Summarize a bank: name tokens, voice modes, FX usage, arp, parameter ranges.
 
-- Generic bank analyzer: `implementations/korg/ms2000/tools/analyze_patch_bank.py`
-  - Summarizes name tokens, voice modes, FX usage, arpeggiator and parameter ranges
-  - Usage:
-    - `python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx`
+Usage:
+```bash
+python3 implementations/korg/ms2000/tools/analyze_patch_bank.py \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+```
 
 ### compare_patches.py
 
-Compare two SysEx files and show differences.
+Compare two banks patch-by-patch; show parameter differences and summaries.
 
-**Features:**
-- Patch-by-patch comparison
-- Parameter diff display
-- Summary statistics
-
-**Usage:**
+Usage:
 ```bash
+cd implementations/korg/ms2000/tools
 python3 compare_patches.py <file1.syx> <file2.syx>
 ```
 
 ### send_to_ms2000.py
 
-Send a SysEx file to a Korg MS2000/MS2000R MIDI output port. Thin wrapper around the top‑level `tools/send_sysex.py` with sensible defaults for MS2000.
+Send a SysEx file to MS2000/MS2000R. Thin wrapper around top‑level `tools/send_sysex.py` with sane defaults.
 
 Dependencies:
 - Python 3.8+
-- `mido` and `python-rtmidi` (`pip install mido python-rtmidi`)
+- `mido`, `python-rtmidi` (`pip install mido python-rtmidi`)
 
-Features:
-- Defaults to `--out \"MS2000\"`, `--file ../patches/factory/FactoryBanks.syx`, `--delay-ms 50`
-- Lists available MIDI outputs
-- Allows overriding output port, file, delay, and auto-fix
+Defaults:
+- `--out "MS2000"`, `--file ../patches/factory/FactoryBanks.syx`, `--delay-ms 50`
 
 Usage:
 ```bash
-# From this tools directory
+cd implementations/korg/ms2000/tools
 python3 send_to_ms2000.py --list-outputs
 python3 send_to_ms2000.py                     # send bundled factory bank
 python3 send_to_ms2000.py --out "Your Port"   # choose a specific output
@@ -187,23 +180,56 @@ python3 send_to_ms2000.py --file path\to\file.syx --delay-ms 50
 
 ### fix_sysex.py
 
-Fix broken SysEx files that won't load into hardware.
+Fix broken SysEx files (e.g., missing F7, zero‑padded).
 
-**Features:**
-- Validates SysEx header
-- Removes zero padding
-- Adds missing F7 (End of Exclusive) terminator
-- Creates automatic backups
-
-**Usage:**
+Usage:
 ```bash
+cd implementations/korg/ms2000/tools
 python3 fix_sysex.py <input.syx> [output.syx]
 ```
 
-**Why you might need this:**
-Many MS2000 SysEx files found online are padded with zeros and missing the required F7 terminator byte. This prevents them from loading into the hardware even though they may decode correctly in software. This tool fixes the issue automatically.
+See [docs/SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) and top‑level [tools/SEND_SYSEX.md](../../../tools/SEND_SYSEX.md) for more.
 
-See [SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) for details.
+### copy_patch.py
+
+Copy a patch within a bank (e.g., A01 → A02).
+
+Usage:
+```bash
+cd implementations/korg/ms2000/tools
+python3 copy_patch.py <input.syx> <src_index 1..128> <dst_index 1..128> [-o output.syx]
+```
+
+### export_single_program.py
+
+Export a single program to a CURRENT PROGRAM DATA DUMP (.syx, 0x40). Supports encoding variants.
+
+Usage:
+```bash
+cd implementations/korg/ms2000/tools
+python3 export_single_program.py <bank.syx> <index 1..128> [--v1|--v2] [-o out.syx]
+```
+
+### dump_bank_json.py
+
+Dump a bank as a JSON array for scripting/inspection.
+
+Usage:
+```bash
+cd implementations/korg/ms2000/tools
+python3 dump_bank_json.py ../patches/factory/FactoryBanks.syx \
+        ../../examples/factory_banks.json
+```
+
+### create_boc_patches.py
+
+Generate the BOCSunday bank and write BOCSunday.syx into `patches/BoardsOfCanada/`.
+
+Usage:
+```bash
+cd implementations/korg/ms2000/tools
+python3 create_boc_patches.py
+```
 
 ## Factory Patches
 
