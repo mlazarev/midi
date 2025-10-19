@@ -6,7 +6,7 @@ Generates BOCSunday.syx with 16 original Boards of Canada-inspired patches
 based on analysis of authentic BOC patch bank and synthesis principles.
 """
 
-from decode_sysex import decode_korg_7bit
+import os
 import struct
 
 class MS2000PatchBuilder:
@@ -605,9 +605,6 @@ def create_sysex_file(patches, output_path):
 
 
 if __name__ == '__main__':
-    import sys
-    import os
-
     # Create patches
     print("Creating BOC Sunday patches...")
     patches = create_boc_sunday_patches()
@@ -616,8 +613,8 @@ if __name__ == '__main__':
     while len(patches) < 128:
         patches.append(patches[0])
 
-    # Output path
-    output_dir = os.path.join(os.path.dirname(__file__), '..', 'patches')
+    # Output path (this folder)
+    output_dir = os.path.dirname(__file__)
     output_path = os.path.join(output_dir, 'BOCSunday.syx')
 
     # Create SysEx file

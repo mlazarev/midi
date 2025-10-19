@@ -227,7 +227,7 @@ Generate the BOCSunday bank and write BOCSunday.syx into `patches/BoardsOfCanada
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
+cd implementations/korg/ms2000/patches/BoardsOfCanada
 python3 create_boc_patches.py
 ```
 

@@ -509,7 +509,7 @@ python3 implementations/korg/ms2000/tools/send_to_ms2000.py BOCSunday.syx
 ## Related Files
 
 - **Analysis Guide:** `/docs/HOW_TO_MAKE_BOARDS_OF_CANADA_SOUNDS.md`
-- **Generator Script:** `tools/create_boc_patches.py`
+- **Generator Script:** `patches/BoardsOfCanada/create_boc_patches.py`
 - **Decoder:** `tools/decode_sysex.py`
 - **Original BOC Bank:** `patches/BOCPatches.syx` (reference/comparison)
 
