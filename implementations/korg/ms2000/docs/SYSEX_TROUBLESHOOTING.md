@@ -230,7 +230,7 @@ Without F7, the synth doesn't know the message is complete. It may:
 #### Verify with Decoder
 
 ```bash
-python3 decode_sysex.py OriginalPatches.syx
+python3 decode_sysex.py patches/factory/FactoryBanks.syx
 ```
 
 Output should show (for a complete bank):
@@ -248,7 +248,7 @@ Successfully decoded 123 patches
 
 ```bash
 # Should show F7 at the end
-tail -c 1 OriginalPatches.syx | xxd
+tail -c 1 patches/factory/FactoryBanks.syx | xxd
 # Output: 00000000: f7
 ```
 
@@ -422,5 +422,5 @@ Always verify:
 ---
 
 Repository note:
-- The included `implementations/korg/ms2000/patches/OriginalPatches.syx` is a complete 128‑patch bank and ends with F7.
+- The included `implementations/korg/ms2000/patches/factory/FactoryBanks.syx` is a complete 128‑patch bank and ends with F7.
 - If you encounter third‑party files that are padded or incomplete, apply the checks in this guide.

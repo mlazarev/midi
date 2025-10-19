@@ -29,9 +29,13 @@ ms2000/
 │   ├── compare_patches.py      # Compare two SysEx files
 │   └── send_to_ms2000.py       # Send SysEx to MS2000/MS2000R (wrapper)
 ├── patches/                     # Patch files
-│   └── OriginalPatches.syx     # Factory presets (128 patches)
+│   ├── factory/
+│   │   └── FactoryBanks.syx    # Factory presets (128 patches)
+│   └── BoardsOfCanada/
+│       ├── BOCPatches.syx      # Reference BOC bank
+│       └── BOCSunday.syx       # New BOC Sunday bank
 └── examples/                    # Example outputs
-    └── original_patches_decoded.txt  # Decoded factory patches
+    └── factory_banks.json      # Decoded factory patches (JSON)
 ```
 
 ## Quick Start
@@ -39,7 +43,7 @@ ms2000/
 ### Decode a SysEx file
 ```bash
 cd tools
-python3 decode_sysex.py ../patches/OriginalPatches.syx
+python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
 Example output:
@@ -168,7 +172,7 @@ Dependencies:
 - `mido` and `python-rtmidi` (`pip install mido python-rtmidi`)
 
 Features:
-- Defaults to `--out "MS2000"`, `--file ../patches/OriginalPatches.syx`, `--delay-ms 50`
+- Defaults to `--out \"MS2000\"`, `--file ../patches/factory/FactoryBanks.syx`, `--delay-ms 50`
 - Lists available MIDI outputs
 - Allows overriding output port, file, delay, and auto-fix
 
@@ -203,7 +207,7 @@ See [SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) for details.
 
 ## Factory Patches
 
-The included **OriginalPatches.syx** contains 128 patches:
+The included **FactoryBanks.syx** contains 128 patches:
 - **A01-H12 (123 patches)**: Original factory presets
 - **H13-H16 (5 patches)**: Blank placeholders to complete the bank
 
@@ -215,7 +219,7 @@ The included **OriginalPatches.syx** contains 128 patches:
 - **Effects:** Evolution, Ice Field, Bad Dreem, Thunder
 - **Vocoder:** Voice /A/, Vocoder1, Vocoder8, Vocoder16
 
-Full patch list available in [examples/original_patches_decoded.txt](examples/original_patches_decoded.txt).
+Full patch list available in `examples/factory_banks.json`.
 
 ## Technical Details
 
@@ -224,7 +228,7 @@ Full patch list available in [examples/original_patches_decoded.txt](examples/or
 - After encoding: ~37,157 bytes
 - With header + F7: 37,163 bytes total
 
-OriginalPatches.syx is 37,163 bytes (128 patches, complete bank ready for hardware).
+FactoryBanks.syx is 37,163 bytes (128 patches, complete bank ready for hardware).
 
 ### Device Identification
 
@@ -256,7 +260,7 @@ Where:
 ```python
 from decode_sysex import parse_sysex_file
 
-patches = parse_sysex_file('OriginalPatches.syx')
+patches = parse_sysex_file('patches/factory/FactoryBanks.syx')
 patch = patches[0]  # First patch
 
 print(f"Name: {patch.name}")

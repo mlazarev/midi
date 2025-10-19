@@ -15,7 +15,7 @@ Usage examples:
   python tools/send_sysex.py --list-outputs
 
   # Send a .syx file to a specific output by substring match
-  python tools/send_sysex.py --file implementations/korg/ms2000/patches/OriginalPatches.syx \
+  python tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
       --out "MS2000" --delay-ms 50
 
 Notes:
@@ -209,4 +209,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

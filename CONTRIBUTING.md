@@ -110,7 +110,7 @@ Code contributions should:
 5. **Test your changes**
    ```bash
    cd implementations/korg/ms2000/tools
-   python3 decode_sysex.py ../patches/OriginalPatches.syx
+   python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
    ```
 
 6. **Commit your changes**

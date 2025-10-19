@@ -53,7 +53,7 @@ Complete SysEx decoder and tools for the Korg MS2000 virtual analog synthesizer.
 **Quick Start:**
 ```bash
 cd implementations/korg/ms2000/tools
-python3 decode_sysex.py ../patches/OriginalPatches.syx
+python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
 See [MS2000 README](implementations/korg/ms2000/README.md) for full documentation.
@@ -107,7 +107,7 @@ cat docs/general/LEARNING_SUMMARY.md
 **2. Decode a SysEx file:**
 ```bash
 cd implementations/korg/ms2000/tools
-python3 decode_sysex.py ../patches/OriginalPatches.syx
+python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
 **3. Compare two patch banks:**
@@ -121,7 +121,7 @@ python3 compare_patches.py file1.syx file2.syx
 python3 tools/send_sysex.py --list-outputs
 
 # Send a .syx file (requires 'mido' + 'python-rtmidi')
-python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/OriginalPatches.syx \
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
     --out "MS2000" --delay-ms 50
 ```
 

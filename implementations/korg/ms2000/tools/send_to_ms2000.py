@@ -4,7 +4,7 @@ Convenience wrapper to send a SysEx (.syx) file to a Korg MS2000/MS2000R.
 
 Defaults:
   - Output port substring: "MS2000"
-  - File: implementations/korg/ms2000/patches/OriginalPatches.syx
+  - File: implementations/korg/ms2000/patches/factory/FactoryBanks.syx
   - Delay between messages: 50ms
 
 Dependencies:
@@ -36,7 +36,7 @@ def project_root() -> Path:
 
 
 def default_bank_path() -> Path:
-    return project_root() / "implementations/korg/ms2000/patches/OriginalPatches.syx"
+    return project_root() / "implementations/korg/ms2000/patches/factory/FactoryBanks.syx"
 
 
 def import_send_sysex():
@@ -57,7 +57,7 @@ def main(argv=None) -> int:
         "--file",
         type=Path,
         default=default_bank_path(),
-        help=".syx file to send (default: bundled OriginalPatches.syx)",
+        help=".syx file to send (default: bundled FactoryBanks.syx)",
     )
     p.add_argument(
         "--out",
@@ -113,4 +113,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
