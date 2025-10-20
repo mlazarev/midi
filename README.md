@@ -1,8 +1,8 @@
-# MS2000 SysEx Tools, Banks, and BOC Patch Generation
+# General MIDI + Korg MS2000 SysEx Tools, Banks, and BOC Patch Generation
 
 Practical tools and curated content for Korg MS2000/MS2000R sound designers and developers:
 - Generate, analyze, and send complete 128‑program banks
-- Ship ready‑to‑use Boards of Canada–style banks (BOCPatches, BOCSunday)
+- Ship ready‑to‑use Boards of Canada–style banks
 - Decode and export factory banks for inspection and tooling
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -44,7 +44,7 @@ Complete SysEx workflow for Korg MS2000: generator, decoder, analyzer, sender.
 **Highlights for sound designers:**
 - Banks ready to send:
   - Factory: implementations/korg/ms2000/patches/factory/FactoryBanks.syx
-  - Boards of Canada: implementations/korg/ms2000/patches/BoardsOfCanada/{BOCPatches.syx, BOCSunday.syx}
+  - Boards of Canada: implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
 - BOCSunday generator creates 128‑program bank:
   - 16 handcrafted patches (A01–A16)
   - 112 additional varied patches (pads/leads/bass/keys/arp) influenced by Factory distributions
@@ -61,8 +61,7 @@ See [MS2000 README](implementations/korg/ms2000/README.md) for full documentatio
 
 ### Boards of Canada Example Banks
 
-- BOCPatches.syx — reference BOC bank
-- BOCSunday.syx — new bank: 16 handcrafted + 112 algorithmic patches
+- BOCSunday.syx — new BOC bank: 16 handcrafted + 112 algorithmic patches
   - Generator: implementations/korg/ms2000/patches/BoardsOfCanada/create_boc_patches.py
   - Ready‑to‑send bank at: implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
 
