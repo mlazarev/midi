@@ -1,21 +1,21 @@
-# MIDI SysEx Learning & Tools
+# MS2000 SysEx Tools, Banks, and BOC Patch Generation
 
-A comprehensive educational resource and toolset for understanding MIDI System Exclusive (SysEx) messages, with practical implementations for specific synthesizers.
+Practical tools and curated content for Korg MS2000/MS2000R sound designers and developers:
+- Generate, analyze, and send complete 128‑program banks
+- Ship ready‑to‑use Boards of Canada–style banks (BOCPatches, BOCSunday)
+- Decode and export factory banks for inspection and tooling
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 
-## 🎯 Project Goals
+## 🎯 What You Can Do Here
 
-This project provides:
-1. **Educational Documentation** - Learn MIDI and SysEx from fundamentals to advanced topics
-2. **Reference Materials** - Quick lookup tables and technical specifications
-3. **Working Tools** - Real implementations for decoding and analyzing SysEx files
-4. **Device-Specific Implementations** - Complete toolsets for specific synthesizers
+- Send banks to hardware quickly (single or full bank)
+- Generate BOC‑inspired banks from code (with variety and safe parameter ranges)
+- Analyze banks (FX usage, arp, naming, summary stats) and export JSON
+- Inspect and modify patches at the byte level if needed
 
-## 📚 Documentation
-
-### General MIDI & SysEx Learning
+## 📚 Documentation (Focused)
 
 Located in [`docs/general/`](docs/general/):
 
@@ -33,22 +33,23 @@ Located in [`docs/general/`](docs/general/):
   - Bit manipulation formulas
   - Common code snippets
 
-## 🔧 Implementations
-
-### Korg MS2000/MS2000R
+## 🔧 Korg MS2000/MS2000R
 
 [![MS2000](https://img.shields.io/badge/Korg-MS2000-red)](implementations/korg/ms2000/)
 
-Complete SysEx decoder and tools for the Korg MS2000 virtual analog synthesizer.
+Complete SysEx workflow for Korg MS2000: generator, decoder, analyzer, sender.
 
 **Location:** [`implementations/korg/ms2000/`](implementations/korg/ms2000/)
 
-**Features:**
-- Full SysEx file decoder with 7-to-8 bit decoding
-- Patch parameter extraction and display
-- Patch comparison tool
-- 128 factory patches included (complete bank)
-- Complete MIDI implementation documentation
+**Highlights for sound designers:**
+- Banks ready to send:
+  - Factory: implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+  - Boards of Canada: implementations/korg/ms2000/patches/BoardsOfCanada/{BOCPatches.syx, BOCSunday.syx}
+- BOCSunday generator creates 128‑program bank:
+  - 16 handcrafted patches (A01–A16)
+  - 112 additional varied patches (pads/leads/bass/keys/arp) influenced by Factory distributions
+- Robust 7→8 encoding (variant v2) verified on hardware
+- Tools for compare, analyze, JSON export, single‑program dumps
 
 **Quick Start:**
 ```bash
@@ -57,6 +58,19 @@ python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
 See [MS2000 README](implementations/korg/ms2000/README.md) for full documentation.
+
+### Boards of Canada Example Banks
+
+- BOCPatches.syx — reference BOC bank
+- BOCSunday.syx — new bank: 16 handcrafted + 112 algorithmic patches
+  - Generator: implementations/korg/ms2000/patches/BoardsOfCanada/create_boc_patches.py
+  - Ready‑to‑send bank at: implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
+
+Send to hardware:
+```bash
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx \
+    --out "MS2000" --delay-ms 50
+```
 
 ## 🏗️ Repository Structure
 
@@ -81,7 +95,7 @@ midi-sysex-learning/
             └── examples/              # Example outputs
 ```
 
-## 🚀 Getting Started
+## 🚀 Getting Started (MS2000)
 
 ### Prerequisites
 
@@ -104,7 +118,7 @@ cd midi-sysex-learning
 cat docs/general/LEARNING_SUMMARY.md
 ```
 
-**2. Decode a SysEx file:**
+**2. Decode a SysEx file (Factory):**
 ```bash
 cd implementations/korg/ms2000/tools
 python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
@@ -125,7 +139,7 @@ python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/F
     --out "MS2000" --delay-ms 50
 ```
 
-## 📖 Learning Path
+## 📖 Learning Path (Optional)
 
 For newcomers to MIDI and SysEx, we recommend this progression:
 
@@ -148,7 +162,7 @@ For newcomers to MIDI and SysEx, we recommend this progression:
    - Find bit manipulation formulas
    - Check manufacturer IDs
 
-## 🎓 What You'll Learn
+## 🎓 What You'll Learn (Optional)
 
 - ✅ MIDI protocol fundamentals (status/data bytes, channels, messages)
 - ✅ System Exclusive (SysEx) message structure and purpose
@@ -172,13 +186,13 @@ For newcomers to MIDI and SysEx, we recommend this progression:
 - Develop patch editors with GUIs
 - Implement MIDI-to-audio renderers
 
-### Educators
+### Educators (Optional)
 - Teach synthesis and MIDI concepts
 - Demonstrate data encoding techniques
 - Show real-world protocol implementation
 - Provide hands-on learning materials
 
-### Researchers
+### Researchers (Optional)
 - Study parameter distributions in sound banks
 - Analyze relationships between parameters and timbre
 - Extract features for machine learning
@@ -186,7 +200,7 @@ For newcomers to MIDI and SysEx, we recommend this progression:
 
 ## 🔬 Technical Highlights
 
-### 7-to-8 Bit Encoding
+### 7→8 Bit Encoding (Korg variant v2)
 
 One of the key concepts demonstrated in this project is Korg's 7-to-8 bit encoding:
 
@@ -205,6 +219,7 @@ def decode_korg_7bit(encoded_data):
         msb_byte = encoded_data[i]
         for j in range(7):
             lower_7 = encoded_data[i + 1 + j] & 0x7F
+            # Note: hardware here uses variant v2 (MSB of byte j in bit j)
             msb = (msb_byte >> (6 - j)) & 0x01
             full_byte = (msb << 7) | lower_7
             decoded.append(full_byte)
@@ -212,7 +227,7 @@ def decode_korg_7bit(encoded_data):
     return bytes(decoded)
 ```
 
-This elegant solution adds only 14.3% overhead while maintaining MIDI compatibility.
+This adds ~14.3% overhead while maintaining MIDI compatibility.
 
 ## 🤝 Contributing
 
