@@ -1,11 +1,11 @@
 # BOCSunday.syx - Original Boards of Canada Style Patches
 
-**16 original patches created from scratch using BOC synthesis principles**
+16 handcrafted patches created from scratch using BOC synthesis principles, plus 112 algorithmically generated for a full 128‑program bank.
 
 Created: 2025-01-19
 Bank Size: 37,163 bytes (128 patches, A01-H16)
-Unique Patches: 16 (A01-A16)
-Filler Patches: 112 (B01-H16, repeats of "Lazy Sunday")
+Unique Patches: 128 (A01–H16)
+Composition: 16 handcrafted (A01–A16) + 112 generated (B01–H16)
 
 Encoding: Korg 7-bit variant v2 (MSB of decoded byte j is stored in bit j of the MSB byte).
 
@@ -25,7 +25,7 @@ All patches are **audible and playable** with carefully balanced parameters.
 
 ---
 
-## Patch List
+## Patch List (A01–A16)
 
 ### A01: Lazy Sunday
 **Type:** Classic BOC Pad
@@ -482,11 +482,11 @@ All patches implement these core BOC characteristics identified through analysis
 ### Via MIDI:
 ```bash
 # Using send_sysex.py
-python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/BOCSunday.syx \
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx \
     --out "MS2000" --delay-ms 50
 
 # Or using send_to_ms2000.py (convenience wrapper)
-python3 implementations/korg/ms2000/tools/send_to_ms2000.py BOCSunday.syx
+python3 implementations/korg/ms2000/tools/send_to_ms2000.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
 ```
 
 ### Via Hardware:
@@ -510,7 +510,7 @@ python3 implementations/korg/ms2000/tools/send_to_ms2000.py BOCSunday.syx
 
 - **Analysis Guide:** `/docs/HOW_TO_MAKE_BOARDS_OF_CANADA_SOUNDS.md`
 - **Generator Script:** `patches/BoardsOfCanada/create_boc_patches.py`
-- **Decoder:** `tools/decode_sysex.py`
-- **Original BOC Bank:** `patches/BOCPatches.syx` (reference/comparison)
+- **Decoder:** `implementations/korg/ms2000/tools/decode_sysex.py`
+- **Original BOC Bank:** `patches/BoardsOfCanada/BOCPatches.syx` (reference/comparison)
 
 Enjoy exploring the Boards of Canada sound on your MS2000! 🎹

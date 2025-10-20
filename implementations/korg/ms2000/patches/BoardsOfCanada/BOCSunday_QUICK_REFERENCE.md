@@ -1,6 +1,6 @@
 # BOCSunday.syx - Quick Reference
 
-**16 Unique Boards of Canada Style Patches**
+16 handcrafted Boards of Canada patches + 112 algorithmically generated (total 128).
 
 ## How to Navigate Patches on MS2000
 
@@ -8,11 +8,13 @@
 2. Use **VALUE** dial or **▲/▼** buttons to select patches
 3. Patches are organized: A01-A16, B01-H16
 
-**NOTE:** Only A01-A16 are unique patches. B01-H16 are copies of "Sunday Pad"
+Note:
+- A01–A16 are handcrafted originals.
+- B01–H16 are new, varied patches (pads, leads, bass, keys, arps) generated with Factory‑influenced distributions.
 
 ---
 
-## Patch Quick Reference
+## Patch Quick Reference (A01–A16)
 
 ### A01: Sunday Pad
 **Type:** Classic Ambient Pad
@@ -197,7 +199,15 @@ All patches share BOC characteristics:
 - Play simple 5-7 note patterns
 - Use fifths and fourths in chords
 
-**Categories:**
+## Category Overview (B01–H16)
+
+- Pads: warm, slow, L/R delay + chorus
+- Leads: sync/detune motion, medium cutoff, musical LFOs
+- Bass: tight 24dB LPF, short EGs, subtle movement
+- Keys: EP/bell‑style variations with ring mod options
+- Arps: playful sequences; Ensemble + L/R Delay
+
+Tip: Use the mod wheel to open the filter (MIDI2 → Cutoff) across all patches.
 - **Pads:** A01, A04, A08, A09, A11, A13, A14, A16
 - **Leads:** A02, A10, A15
 - **Plucks/Keys:** A05, A12
