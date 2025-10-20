@@ -1,17 +1,16 @@
 # BOCSunday.syx - Original Boards of Canada Style Patches
 
-16 handcrafted patches created from scratch using BOC synthesis principles, plus 112 algorithmically generated for a full 128‑program bank.
+128 algorithmically generated patches created from BOC synthesis principles
 
-Created: 2025-01-19
-Bank Size: 37,163 bytes (128 patches, A01-H16)
+Created: Sunday, October 19, 2025
+Bank Size: 37,163 bytes
 Unique Patches: 128 (A01–H16)
-Composition: 16 handcrafted (A01–A16) + 112 generated (B01–H16)
 
 Encoding: Korg 7-bit variant v2 (MSB of decoded byte j is stored in bit j of the MSB byte).
 
 ## Overview
 
-These patches were algorithmically generated based on detailed analysis of 123 authentic BOC patches, implementing the core BOC sound design principles:
+These patches were algorithmically generated based on detailed analysis of existing BOC patches, implementing the core BOC sound design principles:
 
 - **L/R Delay dominance** (77% of original patches use this)
 - **Chorus/Flanger for wobble** (72% of original patches)
@@ -21,229 +20,12 @@ These patches were algorithmically generated based on detailed analysis of 123 a
 - **Long envelope releases** for ambient character
 - **Minimal portamento and distortion**
 
-All patches are **audible and playable** with carefully balanced parameters.
-
 ---
 
 ## Detailed Reference
 
 See the full patch‑by‑patch breakdown in `BOCSunday_DETAILED_REFERENCE.md` (A01–H16).
 
-### A08: Faded Photo
-**Type:** Ambient Pad
-**Character:** Distant, dreamy, layered octaves
-
-**Oscillators:**
-- OSC1: Sine wave
-- OSC2: Saw, +19 semitones (octave + fifth)
-- Noise: 22
-
-**Filter:** 12dB LPF, Cutoff=44, Resonance=15, EG1 Int=+10
-**Envelopes:** Slow attack, long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 9Hz) → Pitch (+10)
-- LFO2 (Sine, 74Hz) → Cutoff (+20) and Pan (+30)
-
-**Effects:**
-- Delay: L/R Delay, Time=38, Depth=90 (high feedback)
-- Mod FX: Chorus/Flanger, Speed=14, Depth=42
-
-**Best For:** Ethereal pads, background atmosphere, film scoring
-
----
-
-### A09: 70s Sky
-**Type:** Vintage Synth Pad
-**Character:** Retro, analog, PWM modulation
-
-**Oscillators:**
-- OSC1: Pulse wave, PWM via Ctrl1=45
-- OSC2: Triangle, +12 semitones (octave)
-- Noise: 14
-
-**Filter:** 12dB LPF, Cutoff=62, Resonance=25, EG1 Int=+15
-**Envelopes:** Slow attack (15ms), long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 11Hz) → Pitch (+8)
-- LFO2 (Sine, 68Hz) → OSC1 Ctrl (+18) for PWM
-- LFO1 → Cutoff (+10)
-
-**Effects:**
-- Delay: **StereoDelay**, Time=55, Depth=65
-- Mod FX: Ensemble, Speed=18, Depth=25
-
-**Best For:** Vintage synth sounds, 1970s character, string machines
-
----
-
-### A10: Wobbly Lead
-**Type:** Sync Lead
-**Character:** Aggressive, harmonically rich, unstable pitch
-
-**Oscillators:**
-- OSC1: Saw wave
-- OSC2: Saw with **Sync modulation**, +7 semitones, +5 cents detune
-- Noise: 18
-
-**Filter:** 12dB LPF, Cutoff=60, Resonance=20, EG1 Int=+20
-**Envelopes:** Instant attack, medium decay/sustain/release
-**LFOs:**
-- LFO1 (Triangle, 8Hz) → Pitch (+12) strong vibrato
-- LFO2 (Sine, 66Hz) → Pitch (+6) secondary wobble
-- LFO1 → Cutoff (+14)
-
-**Effects:**
-- Delay: L/R Delay, Time=40, Depth=82
-- Mod FX: Chorus/Flanger, Speed=30, Depth=45 (heavy)
-
-**Best For:** Lead lines with character, solos, aggressive melodies
-
----
-
-### A11: Distant
-**Type:** Ambient DWGS Pad
-**Character:** Far away, hazy, floating
-
-**Oscillators:**
-- OSC1: DWGS wavetable #35
-- OSC2: Triangle, +7 semitones
-- Noise: 28 (high for lo-fi character)
-
-**Filter:** 12dB LPF, Cutoff=40, Resonance=12, EG1 Int=+18
-**Envelopes:** Slow attack (20ms), very long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 10Hz) → Pitch (+9)
-- LFO2 (Sine, 70Hz) → Cutoff (+12) and Pan (+26)
-
-**Effects:**
-- Delay: L/R Delay, Time=40, Depth=95 (maximum feedback)
-- Mod FX: Phaser, Speed=12, Depth=18
-
-**Best For:** Deep atmospheric pads, distant textures, soundscapes
-
----
-
-### A12: Soft Pluck
-**Type:** Plucked/Pizzicato
-**Character:** Gentle attack, natural decay
-
-**Oscillators:**
-- OSC1: Triangle wave
-- OSC2: Sine, +12 semitones (octave)
-- Noise: 10 (minimal)
-
-**Filter:** 12dB LPF, Cutoff=55, Resonance=18, EG1 Int=+28
-**Envelopes:**
-- EG1: Instant attack, short decay (35ms), low sustain, short release
-- EG2: Instant attack, short decay (38ms), medium sustain
-
-**LFOs:**
-- EG1 → Pitch (+10) for pitch drop on pluck
-- LFO2 (Sine, 65Hz) → Cutoff (+8)
-- LFO1 (Triangle, 18Hz) → Pan (+15)
-
-**Effects:**
-- Delay: L/R Delay, Time=42, Depth=68
-- Mod FX: Chorus/Flanger, Speed=22, Depth=30
-
-**Best For:** Plucked melodies, pizzicato strings, mallet sounds
-
----
-
-### A13: Morning Haze
-**Type:** Vox Wave Pad
-**Character:** Vocal-like, human quality
-
-**Oscillators:**
-- OSC1: Vox Wave (formant wave)
-- OSC2: Triangle, +5 semitones
-- Noise: 20
-
-**Filter:** 12dB LPF, Cutoff=48, Resonance=16, EG1 Int=+12
-**Envelopes:** Slow attack (8ms), long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 10Hz) → Pitch (+9)
-- LFO2 (Sine, 72Hz) → Cutoff (+16)
-- LFO1 → OSC1 Ctrl (+12) for formant sweep
-
-**Effects:**
-- Delay: L/R Delay, Time=40, Depth=88
-- Mod FX: Chorus/Flanger, Speed=15, Depth=35
-
-**Best For:** Vocal-like pads, human textures, choir-like sounds
-
----
-
-### A14: Quiet Moment
-**Type:** Pure Sine Pad
-**Character:** Simple, pure, contemplative
-
-**Oscillators:**
-- OSC1: Sine wave
-- OSC2: Sine, +7 semitones, +3 cents detune
-- Noise: 15
-
-**Filter:** 12dB LPF, Cutoff=46, Resonance=14, EG1 Int=+6
-**Envelopes:** Slow attack (15ms), very long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 9Hz) → Pitch (+7) gentle vibrato
-- LFO2 (Sine, 68Hz) → Pan (+24)
-- LFO1 → Cutoff (+8)
-
-**Effects:**
-- Delay: L/R Delay, Time=38, Depth=80
-- Mod FX: Ensemble, Speed=10, Depth=22
-
-**Best For:** Minimalist pads, pure tones, meditation music
-
----
-
-### A15: Retro Sweep
-**Type:** Bandpass Filter Sweep
-**Character:** Phaser-like, sweeping, retro
-
-**Oscillators:**
-- OSC1: Pulse wave, PWM via Ctrl1=55
-- OSC2: Saw, +12 semitones
-- Noise: 18
-
-**Filter:** **12dB BPF** (bandpass), Cutoff=58, Resonance=28, EG1 Int=+35
-**Envelopes:** Fast attack (5ms), medium envelope with strong filter sweep
-**LFOs:**
-- LFO1 (Triangle, 32Hz) → Cutoff (+25) sweeping
-- LFO2 (Sine, 70Hz) → OSC1 Ctrl (+20) PWM
-- EG1 → Pitch (+12) pitch drop
-
-**Effects:**
-- Delay: L/R Delay, Time=40, Depth=72
-- Mod FX: Phaser, Speed=28, Depth=30
-
-**Best For:** Filter sweeps, risers, retro leads
-
----
-
-### A16: Sunset
-**Type:** Classic BOC Chord Pad
-**Character:** Warm, full, perfect for chords
-
-**Oscillators:**
-- OSC1: Saw wave
-- OSC2: Triangle, +7 semitones (perfect fifth)
-- Noise: 20
-
-**Filter:** 12dB LPF, Cutoff=53, Resonance=19, EG1 Int=+10
-**Envelopes:** Medium attack (10ms), long sustain/release
-**LFOs:**
-- LFO1 (Triangle, 10Hz) → Pitch (+9)
-- LFO2 (Sine, 70Hz) → Cutoff (+15) and Pan (+28)
-
-**Effects:**
-- Delay: L/R Delay, Time=40, Depth=86
-- Mod FX: Chorus/Flanger, Speed=17, Depth=33
-
-**Best For:** Chord progressions, harmonic pads, main progressions
-
----
 
 ## Technical Details
 
@@ -322,22 +104,5 @@ python3 implementations/korg/ms2000/tools/send_to_ms2000.py --file implementatio
 3. Send file using your MIDI software
 4. Patches will load into banks A-H (A01-H16)
 
----
 
-## Credits
 
-**Created:** 2025-01-19
-**Based on:** Analysis of 123 authentic BOC patches for MS2000
-**Method:** Algorithmic generation using statistical analysis of BOC synthesis principles
-**Documentation:** Complete parameter breakdown in HOW_TO_MAKE_BOARDS_OF_CANADA_SOUNDS.md
-
----
-
-## Related Files
-
-- **Analysis Guide:** `/docs/HOW_TO_MAKE_BOARDS_OF_CANADA_SOUNDS.md`
-- **Generator Script:** `patches/BoardsOfCanada/create_boc_patches.py`
-- **Decoder:** `implementations/korg/ms2000/tools/decode_sysex.py`
- 
-
-Enjoy exploring the Boards of Canada sound on your MS2000! 🎹
