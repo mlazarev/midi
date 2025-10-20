@@ -570,6 +570,207 @@ def create_boc_sunday_patches():
     return patches
 
 
+# =========================
+# Additional Patch Generator
+# =========================
+
+def _extract_factory_weights(factory_syx_path):
+    """Analyze factory bank to derive simple weights for variety.
+
+    Returns a dict with weights for osc1 waves, osc2 waves, filter types, and semitone intervals.
+    This uses raw byte offsets per MS2000 spec to avoid needing a full decoder.
+    """
+    try:
+        from pathlib import Path
+        from ...tools.decode_sysex import parse_sysex_file  # type: ignore
+    except Exception:
+        # Fallback to relative import from repo root when run directly
+        import sys
+        from pathlib import Path
+        # Current file: implementations/korg/ms2000/patches/BoardsOfCanada/create_boc_patches.py
+        # Repo root is parents[5]
+        root = Path(__file__).resolve().parents[5]
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from implementations.korg.ms2000.tools.decode_sysex import parse_sysex_file  # type: ignore
+
+    weights = {
+        'osc1_wave': {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1},
+        'osc2_wave': {0: 3, 1: 2, 2: 2},  # Saw favored
+        'filter_type': {0: 1, 1: 2, 2: 1, 3: 1},  # 12dB LPF a bit more likely
+        'semitone': {0: 4, 7: 6, 12: 5, -12: 5, 5: 2, 19: 2},
+    }
+    try:
+        patches = parse_sysex_file(str(factory_syx_path))
+    except Exception:
+        return weights
+
+    from collections import Counter
+    osc1 = Counter()
+    osc2 = Counter()
+    filt = Counter()
+    semi = Counter()
+
+    for p in patches:
+        d = p.raw_data
+        if len(d) < 200:
+            continue
+        t = 38
+        osc1[ d[t+7] & 0x07 ] += 1
+        o2 = d[t+12]
+        osc2[ o2 & 0x03 ] += 1
+        filt[ d[t+19] & 0x03 ] += 1
+        semi[ int((d[t+13] & 0x7F) - 64) ] += 1
+
+    def norm(counter, allow=None, floor=1):
+        out = {}
+        if allow is None:
+            allow = list(counter.keys())
+        for k in allow:
+            out[k] = max(counter.get(k, 0), floor)
+        return out
+
+    weights['osc1_wave'] = norm(osc1, allow=[0,1,2,3,4,5,6,7])
+    weights['osc2_wave'] = norm(osc2, allow=[0,1,2])
+    weights['filter_type'] = norm(filt, allow=[0,1,2,3])
+    # Keep only typical semitone intervals to avoid oddities
+    keep = [ -12, -7, -5, 0, 5, 7, 12, 19 ]
+    weights['semitone'] = norm(Counter({k:v for k,v in semi.items() if k in keep}), allow=keep)
+    return weights
+
+
+def _choose_weighted(rng, table):
+    total = sum(table.values())
+    r = rng.randrange(total)
+    acc = 0
+    for k, w in table.items():
+        acc += w
+        if r < acc:
+            return k
+    return next(iter(table.keys()))
+
+
+def _unique_name(rng, used):
+    adjectives = [
+        'Amber','Autumn','Dusty','Faded','Warm','Rust','Quiet','Soft','Wavy','Distant',
+        'Hazy','Nostalgic','Gentle','Worn','Golden','Forest','Cloudy','Vapor','Lunar','Sunset',
+        'Sepia','Tape','Analog','Electric','Slow','Hidden','Foggy','Deep','Shaded','Granite'
+    ]
+    nouns = [
+        'Field','Lake','Horizon','Memory','Photo','Dream','Path','Stream','Sky','Signal',
+        'Room','Valley','Echo','Stone','Light','Shade','Phase','Forest','Circle','Reel',
+        'Dawn','Glade','Shores','Vista','Frames','Lines','Tape','Voyage','Motion','Frame'
+    ]
+    for _ in range(500):
+        name = f"{rng.choice(adjectives)} {rng.choice(nouns)}"
+        if name not in used:
+            used.add(name)
+            return name
+    # Fallback with index suffix
+    idx = 1
+    while True:
+        name = f"Sunday {idx}"
+        if name not in used:
+            used.add(name)
+            return name
+        idx += 1
+
+
+def _make_patch_category(rng, weights, category, name):
+    p = MS2000PatchBuilder(name)
+    # Common: ensure audible defaults
+    p.set_timbre_mixer(osc1=120+rng.randrange(8), osc2=90+rng.randrange(16), noise=rng.randrange(0,24))
+    ftype = _choose_weighted(rng, weights['filter_type'])
+    # Map filter index to human label
+    ftypes = {0:'24dB LPF',1:'12dB LPF',2:'12dB BPF',3:'12dB HPF'}
+    cutoff = 40 + rng.randrange(30)
+    res = 10 + rng.randrange(20)
+    if category == 'pad':
+        p.set_timbre_osc1(wave='Sine' if rng.random()<0.5 else 'Triangle', level=127)
+        o2w = _choose_weighted(rng, {0:2,1:1,2:2})
+        o2wave = ['Saw','Square','Triangle'][o2w]
+        semi = _choose_weighted(rng, {7:4,12:3,0:2,5:1})
+        p.set_timbre_osc2(wave=o2wave, mod='Off', semitone=semi, level=90+rng.randrange(20))
+        p.set_timbre_filter(type=ftypes.get(ftype,'12dB LPF'), cutoff=45+rng.randrange(15), resonance=12+rng.randrange(10), eg1_int=rng.randrange(0,16))
+        p.set_timbre_envelopes(eg1_adsr=(5,65,120,95+rng.randrange(10)), eg2_adsr=(5,68,127,110+rng.randrange(10)))
+        p.set_timbre_lfos(lfo1_wave='Triangle', lfo1_freq=8+rng.randrange(8), lfo2_wave='Sine', lfo2_freq=60+rng.randrange(20))
+        p.set_mod_fx('Cho/Flg', speed=14+rng.randrange(8), depth=30+rng.randrange(16))
+        p.set_delay('L/R Delay', time=38, depth=80+rng.randrange(16))
+    elif category == 'lead':
+        p.set_timbre_osc1(wave='Saw', ctrl1=40+rng.randrange(40), level=127)
+        o2w = _choose_weighted(rng, weights['osc2_wave'])
+        o2wave = ['Saw','Square','Triangle'][o2w]
+        semi = _choose_weighted(rng, weights['semitone'])
+        p.set_timbre_osc2(wave=o2wave, mod='Sync' if rng.random()<0.3 else 'Off', semitone=semi, tune=rng.randrange(-6,7), level=95+rng.randrange(16))
+        p.set_timbre_filter(type=ftypes.get(ftype,'12dB LPF'), cutoff=55+rng.randrange(20), resonance=12+rng.randrange(18), eg1_int=10+rng.randrange(16))
+        p.set_timbre_envelopes(eg1_adsr=(0, 55, 110, 75), eg2_adsr=(0, 50, 115, 85))
+        p.set_timbre_lfos(lfo1_wave='Triangle', lfo1_freq=10, lfo2_wave='Sine', lfo2_freq=65)
+        p.set_mod_fx('Cho/Flg', speed=18+rng.randrange(10), depth=20+rng.randrange(20))
+        p.set_delay('L/R Delay', time=40, depth=70+rng.randrange(20))
+    elif category == 'bass':
+        p.set_timbre_osc1(wave='Saw' if rng.random()<0.6 else 'Pulse', ctrl1=60+rng.randrange(20), level=127)
+        p.set_timbre_osc2(wave='Triangle', mod='Off', semitone=-12, level=95)
+        p.set_timbre_filter(type='24dB LPF', cutoff=30+rng.randrange(10), resonance=12+rng.randrange(12), eg1_int=20+rng.randrange(16))
+        p.set_timbre_envelopes(eg1_adsr=(0, 45, 80, 50), eg2_adsr=(0, 40, 90, 60))
+        p.set_timbre_lfos(lfo1_wave='Triangle', lfo1_freq=12, lfo2_wave='Sine', lfo2_freq=55)
+        p.set_mod_fx('Cho/Flg', speed=22, depth=18)
+        p.set_delay('L/R Delay', time=36, depth=50)
+    elif category == 'keys':
+        p.set_timbre_osc1(wave='Sine', level=115)
+        p.set_timbre_osc2(wave='Square', mod='Ring' if rng.random()<0.5 else 'Off', semitone=0, level=120)
+        p.set_timbre_filter(type='24dB LPF', cutoff=38+rng.randrange(10), resonance=8+rng.randrange(8), eg1_int=12+rng.randrange(12))
+        p.set_timbre_envelopes(eg1_adsr=(8, 30, 100, 110), eg2_adsr=(60, 80, 100, 110))
+        p.set_timbre_lfos(lfo1_wave='Triangle', lfo1_freq=30, lfo2_wave='Sine', lfo2_freq=70)
+        p.set_mod_fx('Cho/Flg', speed=20, depth=30)
+        p.set_delay('L/R Delay', time=38, depth=65)
+    else:  # arp
+        p.set_arp(on=True, tempo=85+rng.randrange(-10,15), type='Up', range=1 + rng.randrange(2), gate=75+rng.randrange(10), latch=rng.random()<0.3)
+        p.set_timbre_osc1(wave='DWGS' if rng.random()<0.3 else 'Saw', dwgs=rng.randrange(0,64), level=120)
+        p.set_timbre_osc2(wave='Saw', mod='Off', semitone=_choose_weighted(rng, {7:3,12:2,0:1}), level=95)
+        p.set_timbre_filter(type='12dB LPF', cutoff=45, resonance=18, eg1_int=10)
+        p.set_timbre_envelopes(eg1_adsr=(0, 50, 90, 70), eg2_adsr=(0, 48, 95, 72))
+        p.set_timbre_lfos(lfo1_wave='Triangle', lfo1_freq=10, lfo2_wave='Sine', lfo2_freq=66)
+        p.set_mod_fx('Ensemble', speed=140+rng.randrange(20), depth=12+rng.randrange(6))
+        p.set_delay('L/R Delay', time=38, depth=75)
+    # Subtle modulation points to add life
+    try:
+        p.set_timbre_patch(1, 'LFO1', 'Pitch', rng.randrange(6,12))
+        p.set_timbre_patch(2, 'LFO2', 'Cutoff', rng.randrange(8,18))
+        p.set_timbre_patch(3, 'LFO2', 'Pan', rng.randrange(18,32))
+        p.set_timbre_patch(4, 'MIDI2', 'Cutoff', rng.randrange(45,72))
+    except Exception:
+        pass
+    return p.get_bytes()
+
+
+def generate_additional_patches(seed=20251019):
+    """Generate 112 additional varied patches influenced by factory distributions."""
+    # Locate factory bank
+    factory_path = os.path.join(os.path.dirname(__file__), '..', '..', 'factory', 'FactoryBanks.syx')
+    factory_path = os.path.normpath(factory_path)
+    weights = _extract_factory_weights(factory_path)
+
+    import random
+    rng = random.Random(seed)
+
+    categories = ['pad','lead','bass','keys','arp']
+
+    # Ensure names are unique and do not collide with the original 16
+    used_names = set([
+        "Sunday Pad", "Analog Mem", "Vintage Tape", "Nostalgia",
+        "Warm Rhodes", "Dusty Bass", "Childhood", "Faded Photo",
+        "70s Sky", "Wobbly Lead", "Distant", "Soft Pluck",
+        "Morning Haze", "Quiet Moment", "Retro Sweep", "Sunset"
+    ])
+
+    new_patches = []
+    for i in range(112):
+        cat = rng.choice(categories)
+        name = _unique_name(rng, used_names)
+        new_patches.append(_make_patch_category(rng, weights, cat, name))
+    return new_patches
+
+
 def create_sysex_file(patches, output_path):
     """Create a complete MS2000 PROGRAM DATA DUMP SysEx file."""
 
@@ -609,9 +810,9 @@ if __name__ == '__main__':
     print("Creating BOC Sunday patches...")
     patches = create_boc_sunday_patches()
 
-    # Pad to 128 patches if needed (fill remaining with first patch)
-    while len(patches) < 128:
-        patches.append(patches[0])
+    # Add 112 varied patches (pads/leads/bass/keys/arp) influenced by FactoryBanks
+    extra = generate_additional_patches()
+    patches.extend(extra)
 
     # Output path (this folder)
     output_dir = os.path.dirname(__file__)
@@ -621,17 +822,25 @@ if __name__ == '__main__':
     create_sysex_file(patches, output_path)
 
     print("\nPatch List:")
-    patch_names = [
+    base_names = [
         "Sunday Pad", "Analog Mem", "Vintage Tape", "Nostalgia",
         "Warm Rhodes", "Dusty Bass", "Childhood", "Faded Photo",
         "70s Sky", "Wobbly Lead", "Distant", "Soft Pluck",
         "Morning Haze", "Quiet Moment", "Retro Sweep", "Sunset"
     ]
-    for i, name in enumerate(patch_names, 1):
+    for i, name in enumerate(base_names, 1):
         bank = chr(ord('A') + (i - 1) // 16)
         num = ((i - 1) % 16) + 1
         print(f"  [{bank}{num:02d}] {name}")
+    # Show a sample of the newly generated names
+    extra_start = 17
+    print("  ...")
+    # Decode names from generated patches
+    for idx in range(extra_start, extra_start + 9):
+        name = patches[idx-1][0:12].decode('ascii', errors='replace').rstrip()
+        bank = chr(ord('A') + (idx - 1) // 16)
+        num = ((idx - 1) % 16) + 1
+        print(f"  [{bank}{num:02d}] {name}")
 
-    print(f"\nPatches {len(patch_names)+1}-128: Repeated '{patch_names[0]}' for full bank")
     print("\n✓ BOCSunday.syx created successfully!")
     print("  Ready to load into your MS2000 or send via MIDI")
