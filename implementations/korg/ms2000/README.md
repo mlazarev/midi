@@ -32,8 +32,7 @@ ms2000/
 │   ├── factory/
 │   │   └── FactoryBanks.syx    # Factory presets (128 patches)
 │   └── BoardsOfCanada/
-│       ├── BOCPatches.syx      # Reference BOC bank
-│       └── BOCSunday.syx       # New BOC Sunday bank
+│       └── BOCSunday.syx       # BOC Sunday bank
 └── examples/                    # Example outputs
     └── factory_banks.json      # Decoded factory patches (JSON)
 ```

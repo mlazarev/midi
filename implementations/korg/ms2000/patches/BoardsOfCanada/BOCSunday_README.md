@@ -511,6 +511,6 @@ python3 implementations/korg/ms2000/tools/send_to_ms2000.py --file implementatio
 - **Analysis Guide:** `/docs/HOW_TO_MAKE_BOARDS_OF_CANADA_SOUNDS.md`
 - **Generator Script:** `patches/BoardsOfCanada/create_boc_patches.py`
 - **Decoder:** `implementations/korg/ms2000/tools/decode_sysex.py`
-- **Original BOC Bank:** `patches/BoardsOfCanada/BOCPatches.syx` (reference/comparison)
+ 
 
 Enjoy exploring the Boards of Canada sound on your MS2000! 🎹

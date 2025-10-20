@@ -7,8 +7,7 @@ Version: v1.0.0
 ### MS2000 Tools & Banks
 - [x] Robust SysEx encoder/decoder (Korg 7→8 bit, variant v2), hardware‑verified
 - [x] Factory bank included: `patches/factory/FactoryBanks.syx`
-- [x] Boards of Canada banks:
-  - [x] `patches/BoardsOfCanada/BOCPatches.syx` (reference)
+- [x] Boards of Canada style bank:
   - [x] `patches/BoardsOfCanada/BOCSunday.syx` (16 handcrafted + 112 generated)
 - [x] Generator: `patches/BoardsOfCanada/create_boc_patches.py` (safe ranges, varied categories)
 - [x] Tools:
