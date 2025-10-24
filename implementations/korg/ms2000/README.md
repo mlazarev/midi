@@ -26,7 +26,7 @@ ms2000/
 │   └── PATCH_ANALYSIS_GUIDE.md # Techniques to analyze patch banks
 ├── tools/                       # Python tools
 │   ├── decode_sysex.py         # Decode and display SysEx files
-│   ├── compare_patches.py      # Compare two SysEx files
+│   ├── compare_patches.py      # Wrapper for CLI compare command
 │   └── send_to_ms2000.py       # Send SysEx to MS2000/MS2000R (wrapper)
 ├── patches/                     # Patch files
 │   ├── factory/
@@ -64,6 +64,8 @@ SysEx Header:
 ### Compare two patch banks
 ```bash
 python3 compare_patches.py file1.syx file2.syx
+# or directly
+python3 ms2000_cli.py compare file1.syx file2.syx
 ```
 
 ### Send SysEx to MS2000
@@ -137,6 +139,23 @@ cd implementations/korg/ms2000/tools
 python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
+### decode_parameters.py
+
+Emit full patch parameter data (all 254 bytes) as structured JSON.
+
+- Covers oscillators, filters, envelopes, modulation matrix, FX, arp, voice routing
+- Supports single-patch export (`--patch-index`) or full-bank dumps
+- Uses empirically verified offsets documented in `README_DECODE_PARAMETERS.md`
+
+Usage:
+```bash
+python3 implementations/korg/ms2000/tools/decode_parameters.py \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
+        implementations/korg/ms2000/examples/factory_banks.json
+```
+
+See [`README_DECODE_PARAMETERS.md`](tools/README_DECODE_PARAMETERS.md) for details.
+
 ### analyze_patch_bank.py
 
 Summarize a bank: name tokens, voice modes, FX usage, arp, parameter ranges.
@@ -149,12 +168,12 @@ python3 implementations/korg/ms2000/tools/analyze_patch_bank.py \
 
 ### compare_patches.py
 
-Compare two banks patch-by-patch; show parameter differences and summaries.
+Wrapper around the CLI `compare` subcommand for patch-by-patch diffs.
 
 Usage:
 ```bash
 cd implementations/korg/ms2000/tools
-python3 compare_patches.py <file1.syx> <file2.syx>
+python3 compare_patches.py <file1.syx> <file2.syx> [--patch-index N] [--json]
 ```
 
 ### send_to_ms2000.py
@@ -209,15 +228,33 @@ cd implementations/korg/ms2000/tools
 python3 export_single_program.py <bank.syx> <index 1..128> [--v1|--v2] [-o out.syx]
 ```
 
-### dump_bank_json.py
+### ms2000_cli.py
 
-Dump a bank as a JSON array for scripting/inspection.
+Unified entry point for inspection, decoding, analysis, exporting, and repair.
 
-Usage:
+Subcommands:
+- `inspect` — quick human/JSON summary of whole bank or a single patch
+- `decode` — full parameter JSON dump (bank or `--patch-index`)
+- `analyze` — statistical overview or single-patch snapshot
+- `compare` — diff banks or individual patches, human-readable or JSON
+- `export` — write a CURRENT PROGRAM DATA DUMP for a chosen patch
+- `repair` — append missing F7 terminator and warn about short banks
+
+Usage examples:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 dump_bank_json.py ../patches/factory/FactoryBanks.syx \
-        ../../examples/factory_banks.json
+# Summarise first few patches (text)
+python3 ms2000_cli.py inspect ../patches/factory/FactoryBanks.syx --limit 5
+
+# Decode patch A01 to JSON file
+python3 ms2000_cli.py decode ../patches/factory/FactoryBanks.syx \
+        --patch-index 1 --output ../../examples/factory_A01.json
+
+# Analyse complete bank as JSON
+python3 ms2000_cli.py analyze ../patches/factory/FactoryBanks.syx --json
+
+# Compare a single patch between two banks
+python3 ms2000_cli.py compare ../patches/factory/FactoryBanks.syx \
+        ../patches/BoardsOfCanada/BOCSunday.syx --patch-index 1
 ```
 
 ### create_boc_patches.py

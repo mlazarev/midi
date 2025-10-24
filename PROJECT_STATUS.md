@@ -11,14 +11,14 @@ Version: v1.0.0
   - [x] `patches/BoardsOfCanada/BOCSunday.syx` (16 handcrafted + 112 generated)
 - [x] Generator: `patches/BoardsOfCanada/create_boc_patches.py` (safe ranges, varied categories)
 - [x] Tools:
-  - [x] `decode_sysex.py` — decode/display
-  - [x] `analyze_patch_bank.py` — stats summary
-  - [x] `compare_patches.py` — patch diffs
+  - [x] `ms2000_cli.py` — unified inspect/decode/analyze/export/repair
+  - [x] `decode_sysex.py` — legacy wrapper (inspect)
+  - [x] `analyze_patch_bank.py` — legacy wrapper (stats summary)
+  - [x] `compare_patches.py` — patch diffs (wrapper)
   - [x] `send_to_ms2000.py` — convenience sender
   - [x] `copy_patch.py` — duplicate within bank
   - [x] `export_single_program.py` — 0x40 single‑program dumps (v1/v2)
-  - [x] `dump_bank_json.py` — export bank as JSON
-  - [x] `fix_sysex.py` — add F7, strip padding
+  - [x] `fix_sysex.py` — add F7, strip padding (wrapper)
 - [x] Troubleshooting docs updated (encoding variant v2, name corruption, silence)
 - [x] Repo structure reorganized (factory/BoardsOfCanada folders, examples JSON)
 
@@ -29,7 +29,7 @@ Version: v1.0.0
 
 ## 🚧 In Progress
 
-- Decode convenience: expand `decode_sysex.py` to parse full timbre bytes (34‑253)
+- Decode convenience: enrich `ms2000_cli.py decode` output with motion/vocoder bytes
 - Analyzer: auto‑detect v1/v2 in decoder for complete compatibility
 
 ## 📋 Planned Features

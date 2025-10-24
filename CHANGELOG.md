@@ -11,13 +11,13 @@ Highlights
 - Factory bank included: patches/factory/FactoryBanks.syx
 
 Tools
+- ms2000_cli.py — unified inspect/decode/analyze/export/repair interface
 - decode_sysex.py — decode/display SysEx
 - analyze_patch_bank.py — summary stats
 - compare_patches.py — patch diffs
 - send_to_ms2000.py — convenience sender
 - copy_patch.py — copy patch within bank
 - export_single_program.py — 0x40 single program dumps (v1/v2 variants)
-- dump_bank_json.py — export bank as JSON
 - fix_sysex.py — add F7, strip padding
 
 Docs & Structure
