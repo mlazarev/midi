@@ -9,6 +9,7 @@ tools (CLI wrappers, scripts, docs) can rely on a single source of truth.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean, median
@@ -31,20 +32,15 @@ def decode_korg_7bit(encoded_data: bytes) -> bytes:
     i = 0
 
     while i < len(encoded_data):
-        if i + 8 > len(encoded_data):
-            decoded.extend(encoded_data[i:])
-            break
-
         msb_byte = encoded_data[i]
-        for j in range(7):
-            idx = i + 1 + j
-            if idx >= len(encoded_data):
-                break
-            data_byte = encoded_data[idx]
+        remaining = len(encoded_data) - (i + 1)
+        chunk_len = min(7, remaining)
+        for j in range(chunk_len):
+            data_byte = encoded_data[i + 1 + j]
             msb = (msb_byte >> (6 - j)) & 0x01
             full_byte = (msb << 7) | (data_byte & 0x7F)
             decoded.append(full_byte)
-        i += 8
+        i += 1 + chunk_len
 
     return bytes(decoded)
 
@@ -495,6 +491,50 @@ def repair_sysex(
     return report
 
 
+def patches_from_json(records: Sequence[Dict[str, Any]]) -> List[MS2000Patch]:
+    patches: List[MS2000Patch] = []
+    for idx, record in enumerate(records, start=1):
+        raw_hex = record.get("raw_hex")
+        if not raw_hex:
+            raise ValueError(f"Record {idx} missing 'raw_hex' field required for encoding")
+        raw_bytes = bytes.fromhex(raw_hex)
+        if len(raw_bytes) != PATCH_SIZE:
+            raise ValueError(
+                f"Record {idx} raw_hex length {len(raw_bytes)} != {PATCH_SIZE} bytes"
+            )
+        patches.append(MS2000Patch(raw_bytes))
+    return patches
+
+
+def encode_bank_from_json(
+    records: Sequence[Dict[str, Any]],
+    *,
+    midi_channel: int = 0,
+    function: int = 0x4C,
+) -> bytes:
+    if not 0 <= midi_channel <= 0x0F:
+        raise ValueError("MIDI channel must be in range 0..15")
+    header = bytes([0xF0, 0x42, 0x30 | midi_channel, 0x58, function])
+    chunks = [bytes.fromhex(rec["raw_hex"]) for rec in records]
+    for idx, chunk in enumerate(chunks, start=1):
+        if len(chunk) != PATCH_SIZE:
+            raise ValueError(f"Record {idx} raw_hex does not represent {PATCH_SIZE} bytes")
+    decoded_stream = b"".join(chunks)
+    if len(decoded_stream) % PATCH_SIZE != 0:
+        raise ValueError("Decoded stream size is not a multiple of patch size")
+    encoded_stream = encode_korg_7bit(decoded_stream)
+    return header + encoded_stream + bytes([0xF7])
+
+
+def json_records_from_path(path: Path) -> List[Dict[str, Any]]:
+    data = json.loads(path.read_text())
+    if isinstance(data, dict):
+        return [data]
+    if not isinstance(data, list):
+        raise ValueError("JSON must be an object or array of objects")
+    return data
+
+
 __all__ = [
     "SysexHeader",
     "MS2000Patch",
@@ -509,4 +549,7 @@ __all__ = [
     "analyse_single_patch",
     "export_single_program",
     "repair_sysex",
+    "json_records_from_path",
+    "patches_from_json",
+    "encode_bank_from_json",
 ]

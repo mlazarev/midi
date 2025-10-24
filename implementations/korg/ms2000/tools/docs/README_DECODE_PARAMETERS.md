@@ -90,6 +90,16 @@ python3 implementations/korg/ms2000/tools/wrappers/decode_parameters.py \
 
 Outputs array of 128 patches with complete parameters.
 
+### Re-encode to SysEx
+
+Use the unified CLI to rebuild a `.syx` bank from the generated JSON (optionally supplying the original bank as a template to preserve header values):
+
+```bash
+python3 implementations/korg/ms2000/tools/ms2000_cli.py encode \
+        implementations/korg/ms2000/examples/factory_banks.json \
+        /tmp/factory_roundtrip.syx --template implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+```
+
 ## JSON Structure
 
 ```json

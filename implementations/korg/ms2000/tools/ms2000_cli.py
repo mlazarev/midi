@@ -5,6 +5,7 @@ Unified command-line interface for Korg MS2000 tooling.
 Subcommands:
   inspect  - Quick human-readable overview (optionally JSON) of bank or patch
   decode   - Emit full parameter JSON for whole bank or a single patch
+  encode   - Build a SysEx bank from decoded JSON output
   analyze  - Statistical summaries or single-patch snapshot
   compare  - Diff two banks or individual patches
   export   - Write a CURRENT PROGRAM DATA DUMP (.syx) for a selected patch
@@ -33,6 +34,8 @@ if __package__:
         select_patches,
         slot_name,
         export_single_program,
+        encode_bank_from_json,
+        json_records_from_path,
     )
 else:  # pragma: no cover - invoked as script
     tools_dir = Path(__file__).resolve().parent
@@ -48,6 +51,8 @@ else:  # pragma: no cover - invoked as script
         select_patches,
         slot_name,
         export_single_program,
+        encode_bank_from_json,
+        json_records_from_path,
     )
 
 
@@ -147,6 +152,13 @@ def _patch_index_type(value: str) -> int:
     return idx
 
 
+def _midi_channel_type(value: str) -> int:
+    channel = int(value, 0)
+    if not 0 <= channel <= 15:
+        raise argparse.ArgumentTypeError("MIDI channel must be between 0 and 15")
+    return channel
+
+
 def _compare_patch(patch1, patch2, index: int) -> Dict[str, Any]:
     fields = [
         ("name", patch1.name, patch2.name),
@@ -213,6 +225,27 @@ def build_parser() -> argparse.ArgumentParser:
         "--json",
         action="store_true",
         help="Print JSON to stdout (default human-readable summary)",
+    )
+
+    parser_encode = subparsers.add_parser(
+        "encode", help="Create a SysEx bank from decoded JSON"
+    )
+    parser_encode.add_argument("json", type=Path, help="Path to JSON produced by decode")
+    parser_encode.add_argument("output", type=Path, help="Output .syx path")
+    parser_encode.add_argument(
+        "--template",
+        type=Path,
+        help="Optional existing .syx file to copy header values (function/channel)",
+    )
+    parser_encode.add_argument(
+        "--midi-channel",
+        type=_midi_channel_type,
+        help="Override MIDI channel (0-15). Defaults to template or 0",
+    )
+    parser_encode.add_argument(
+        "--function",
+        type=lambda x: int(x, 0),
+        help="Override SysEx function ID (default 0x4C)",
     )
 
     parser_analyze = subparsers.add_parser(
@@ -326,6 +359,35 @@ def cmd_decode(args: argparse.Namespace) -> int:
         print(_format_header(header))
         print()
         _print_full_records(records)
+    return 0
+
+
+def cmd_encode(args: argparse.Namespace) -> int:
+    records = json_records_from_path(args.json)
+
+    midi_channel = args.midi_channel
+    function = args.function
+
+    if args.template:
+        header, _ = load_bank(args.template)
+        if midi_channel is None:
+            midi_channel = header.midi_channel
+        if function is None:
+            function = header.function
+
+    if midi_channel is None:
+        midi_channel = 0
+    if function is None:
+        function = 0x4C
+
+    syx_bytes = encode_bank_from_json(
+        records,
+        midi_channel=midi_channel,
+        function=function,
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_bytes(syx_bytes)
+    print(f"Wrote: {args.output}")
     return 0
 
 
@@ -454,6 +516,7 @@ def cmd_compare(args: argparse.Namespace) -> int:
 COMMANDS = {
     "inspect": cmd_inspect,
     "decode": cmd_decode,
+    "encode": cmd_encode,
     "analyze": cmd_analyze,
     "export": cmd_export,
     "repair": cmd_repair,

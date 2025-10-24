@@ -128,7 +128,14 @@ python3 implementations/korg/ms2000/tools/ms2000_cli.py \
 python3 implementations/korg/ms2000/tools/ms2000_cli.py compare file1.syx file2.syx
 ```
 
-**4. Send a SysEx file to hardware:**
+**4. Encode JSON back to .syx (optional):**
+```bash
+python3 implementations/korg/ms2000/tools/ms2000_cli.py encode \
+        implementations/korg/ms2000/examples/factory_banks.json \
+        /tmp/factory_roundtrip.syx --template implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+```
+
+**5. Send a SysEx file to hardware:**
 ```bash
 # List MIDI outputs
 python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs

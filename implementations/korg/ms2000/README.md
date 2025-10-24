@@ -259,6 +259,10 @@ python3 ms2000_cli.py inspect ../patches/factory/FactoryBanks.syx --limit 5
 python3 ms2000_cli.py decode ../patches/factory/FactoryBanks.syx \
         --patch-index 1 --output ../../examples/factory_A01.json
 
+# Encode JSON back into a bank (preserving header from template)
+python3 ms2000_cli.py encode ../../examples/factory_banks.json \
+        ../patches/factory/FactoryBanks_roundtrip.syx --template ../patches/factory/FactoryBanks.syx
+
 # Analyse complete bank as JSON
 python3 ms2000_cli.py analyze ../patches/factory/FactoryBanks.syx --json
 
