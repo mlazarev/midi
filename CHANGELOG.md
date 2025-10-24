@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 Highlights
 - Introduced `ms2000_cli.py` `compare` subcommand for patch/bank diffs with JSON output
 - Added `ms2000_cli.py encode` to rebuild SysEx banks from decoded JSON
+- Added `ms2000_cli.py analyze --deep` for full-parameter statistical reports
 - Reorganized MS2000 tooling into `lib/`, `wrappers/`, `scripts/`, and `docs/` for clarity
 
 Docs

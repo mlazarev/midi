@@ -10,6 +10,7 @@ tools (CLI wrappers, scripts, docs) can rely on a single source of truth.
 from __future__ import annotations
 
 import json
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean, median
@@ -438,6 +439,285 @@ def analyse_single_patch(patch: MS2000Patch) -> Dict[str, Any]:
     }
 
 
+def _summarise(values: Iterable[int | float]) -> Dict[str, float]:
+    seq = list(values)
+    if not seq:
+        return {}
+    return {
+        "count": len(seq),
+        "min": min(seq),
+        "max": max(seq),
+        "mean": round(float(mean(seq)), 2),
+        "median": round(float(median(seq)), 2),
+    }
+
+
+def _counter_series(counter: Counter) -> List[Tuple[Any, int]]:
+    return counter.most_common()
+
+
+def deep_analyse(records: Sequence[Dict[str, Any]]) -> Dict[str, Any]:
+    total_patches = len(records)
+    voice_modes = Counter()
+    delay_types = Counter()
+    delay_time: List[int] = []
+    delay_depth: List[int] = []
+    delay_sync = 0
+
+    mod_types = Counter()
+    mod_speed: List[int] = []
+    mod_depth: List[int] = []
+
+    eq_hi_freq: List[int] = []
+    eq_hi_gain: List[int] = []
+    eq_low_freq: List[int] = []
+    eq_low_gain: List[int] = []
+
+    arp_on = 0
+    arp_types = Counter()
+    arp_tempo: List[int] = []
+    arp_target = Counter()
+
+    osc1_wave = Counter()
+    osc1_level: List[int] = []
+    osc1_dwgs = Counter()
+
+    osc2_wave = Counter()
+    osc2_mod = Counter()
+    osc2_semitone: List[int] = []
+    osc2_tune: List[int] = []
+    osc2_level: List[int] = []
+
+    noise_level: List[int] = []
+    portamento_time: List[int] = []
+
+    filter_types = Counter()
+    filter_cutoff: List[int] = []
+    filter_resonance: List[int] = []
+    filter_eg_intensity: List[int] = []
+    filter_kbd_track: List[int] = []
+
+    amp_level: List[int] = []
+    amp_pan: List[int] = []
+    amp_velocity: List[int] = []
+    amp_kbd_track: List[int] = []
+    amp_distortion = 0
+
+    eg1_attack: List[int] = []
+    eg1_decay: List[int] = []
+    eg1_sustain: List[int] = []
+    eg1_release: List[int] = []
+
+    eg2_attack: List[int] = []
+    eg2_decay: List[int] = []
+    eg2_sustain: List[int] = []
+    eg2_release: List[int] = []
+
+    lfo1_wave = Counter()
+    lfo1_frequency: List[int] = []
+    lfo1_sync = 0
+
+    lfo2_wave = Counter()
+    lfo2_frequency: List[int] = []
+    lfo2_sync = 0
+
+    mod_sources = Counter()
+    mod_destinations = Counter()
+    mod_intensity: List[int] = []
+
+    timbre_count = 0
+
+    for record in records:
+        voice_modes[record["voice_mode"]] += 1
+
+        effects = record["effects"]
+        delay = effects["delay"]
+        delay_types[delay["type"]] += 1
+        delay_time.append(delay["time"])
+        delay_depth.append(delay["depth"])
+        if delay.get("sync"):
+            delay_sync += 1
+
+        mod_fx = effects["mod_fx"]
+        mod_types[mod_fx["type"]] += 1
+        mod_speed.append(mod_fx["speed"])
+        mod_depth.append(mod_fx["depth"])
+
+        eq = effects["eq"]
+        eq_hi_freq.append(eq["hi_freq"])
+        eq_hi_gain.append(eq["hi_gain"])
+        eq_low_freq.append(eq["low_freq"])
+        eq_low_gain.append(eq["low_gain"])
+
+        arp = record["arpeggiator"]
+        if arp["on"]:
+            arp_on += 1
+            arp_types[arp["type"]] += 1
+            arp_tempo.append(arp["tempo"])
+            arp_target[arp["target"]] += 1
+
+        timbres = [record["timbre1"]]
+        if "timbre2" in record:
+            timbres.append(record["timbre2"])
+
+        for timbre in timbres:
+            timbre_count += 1
+            voice = timbre.get("voice", {})
+            if "portamento_time" in voice:
+                portamento_time.append(voice["portamento_time"])
+
+            osc1 = timbre["osc1"]
+            osc1_wave[osc1["wave"]] += 1
+            osc1_level.append(timbre["mixer"]["osc1_level"])
+            if osc1["wave"] == "DWGS":
+                osc1_dwgs[osc1.get("dwgs_wave", 0)] += 1
+
+            osc2 = timbre["osc2"]
+            osc2_wave[osc2["wave"]] += 1
+            osc2_mod[osc2["modulation"]] += 1
+            osc2_semitone.append(osc2["semitone"])
+            osc2_tune.append(osc2["tune"])
+            osc2_level.append(timbre["mixer"]["osc2_level"])
+
+            noise_level.append(timbre["mixer"]["noise_level"])
+
+            filt = timbre["filter"]
+            filter_types[filt["type"]] += 1
+            filter_cutoff.append(filt["cutoff"])
+            filter_resonance.append(filt["resonance"])
+            filter_eg_intensity.append(filt["eg1_intensity"])
+            filter_kbd_track.append(filt["kbd_track"])
+
+            amp = timbre["amp"]
+            amp_level.append(amp["level"])
+            amp_pan.append(amp["panpot"])
+            amp_velocity.append(amp["velocity_sense"])
+            amp_kbd_track.append(amp.get("kbd_track", 0))
+            if amp.get("distortion"):
+                amp_distortion += 1
+
+            eg1 = timbre["eg1"]
+            eg1_attack.append(eg1["attack"])
+            eg1_decay.append(eg1["decay"])
+            eg1_sustain.append(eg1["sustain"])
+            eg1_release.append(eg1["release"])
+
+            eg2 = timbre["eg2"]
+            eg2_attack.append(eg2["attack"])
+            eg2_decay.append(eg2["decay"])
+            eg2_sustain.append(eg2["sustain"])
+            eg2_release.append(eg2["release"])
+
+            lfo1 = timbre["lfo1"]
+            lfo1_wave[lfo1["wave"]] += 1
+            lfo1_frequency.append(lfo1["frequency"])
+            if lfo1.get("tempo_sync"):
+                lfo1_sync += 1
+
+            lfo2 = timbre["lfo2"]
+            lfo2_wave[lfo2["wave"]] += 1
+            lfo2_frequency.append(lfo2["frequency"])
+            if lfo2.get("tempo_sync"):
+                lfo2_sync += 1
+
+            for route in timbre["patch"].values():
+                intensity = route["intensity"]
+                if intensity != 0:
+                    mod_sources[route["source"]] += 1
+                    mod_destinations[route["destination"]] += 1
+                    mod_intensity.append(intensity)
+
+    return {
+        "patch_count": total_patches,
+        "timbre_count": timbre_count,
+        "voice_modes": _counter_series(voice_modes),
+        "effects": {
+            "delay": {
+                "type_counts": _counter_series(delay_types),
+                "time": _summarise(delay_time),
+                "depth": _summarise(delay_depth),
+                "sync_percent": round((delay_sync / total_patches) * 100, 2) if total_patches else 0.0,
+            },
+            "mod": {
+                "type_counts": _counter_series(mod_types),
+                "speed": _summarise(mod_speed),
+                "depth": _summarise(mod_depth),
+            },
+            "eq": {
+                "hi_freq": _summarise(eq_hi_freq),
+                "hi_gain": _summarise(eq_hi_gain),
+                "low_freq": _summarise(eq_low_freq),
+                "low_gain": _summarise(eq_low_gain),
+            },
+        },
+        "arpeggiator": {
+            "enabled_percent": round((arp_on / total_patches) * 100, 2) if total_patches else 0.0,
+            "types": _counter_series(arp_types),
+            "tempo": _summarise(arp_tempo),
+            "targets": _counter_series(arp_target),
+        },
+        "oscillators": {
+            "osc1": {
+                "wave_counts": _counter_series(osc1_wave),
+                "level": _summarise(osc1_level),
+                "dwgs_waves": _counter_series(osc1_dwgs),
+            },
+            "osc2": {
+                "wave_counts": _counter_series(osc2_wave),
+                "modulation_counts": _counter_series(osc2_mod),
+                "semitone": _summarise(osc2_semitone),
+                "tune": _summarise(osc2_tune),
+                "level": _summarise(osc2_level),
+            },
+        },
+        "mixer": {
+            "noise_level": _summarise(noise_level),
+            "portamento_time": _summarise(portamento_time),
+        },
+        "filter": {
+            "type_counts": _counter_series(filter_types),
+            "cutoff": _summarise(filter_cutoff),
+            "resonance": _summarise(filter_resonance),
+            "eg_intensity": _summarise(filter_eg_intensity),
+            "kbd_track": _summarise(filter_kbd_track),
+        },
+        "amp": {
+            "level": _summarise(amp_level),
+            "pan": _summarise(amp_pan),
+            "velocity_sense": _summarise(amp_velocity),
+            "kbd_track": _summarise(amp_kbd_track),
+            "distortion_count": amp_distortion,
+        },
+        "eg1": {
+            "attack": _summarise(eg1_attack),
+            "decay": _summarise(eg1_decay),
+            "sustain": _summarise(eg1_sustain),
+            "release": _summarise(eg1_release),
+        },
+        "eg2": {
+            "attack": _summarise(eg2_attack),
+            "decay": _summarise(eg2_decay),
+            "sustain": _summarise(eg2_sustain),
+            "release": _summarise(eg2_release),
+        },
+        "lfo": {
+            "lfo1": {
+                "wave_counts": _counter_series(lfo1_wave),
+                "frequency": _summarise(lfo1_frequency),
+                "sync_percent": round((lfo1_sync / timbre_count) * 100, 2) if timbre_count else 0.0,
+            },
+            "lfo2": {
+                "wave_counts": _counter_series(lfo2_wave),
+                "frequency": _summarise(lfo2_frequency),
+                "sync_percent": round((lfo2_sync / timbre_count) * 100, 2) if timbre_count else 0.0,
+            },
+        },
+        "mod_matrix": {
+            "source_counts": _counter_series(mod_sources),
+            "destination_counts": _counter_series(mod_destinations),
+            "intensity": _summarise(mod_intensity),
+        },
+    }
 def export_single_program(
     bank_path: Path,
     patches: Sequence[MS2000Patch],
@@ -552,4 +832,5 @@ __all__ = [
     "json_records_from_path",
     "patches_from_json",
     "encode_bank_from_json",
+    "deep_analyse",
 ]

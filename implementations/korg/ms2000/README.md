@@ -178,6 +178,12 @@ python3 implementations/korg/ms2000/tools/wrappers/analyze_patch_bank.py \
         implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
+Deep analysis with full parameter statistics:
+```bash
+python3 implementations/korg/ms2000/tools/ms2000_cli.py analyze \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx --deep --json
+```
+
 ### compare_patches.py
 
 Wrapper around the CLI `compare` subcommand for patch-by-patch diffs.

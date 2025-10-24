@@ -36,6 +36,7 @@ if __package__:
         export_single_program,
         encode_bank_from_json,
         json_records_from_path,
+        deep_analyse,
     )
 else:  # pragma: no cover - invoked as script
     tools_dir = Path(__file__).resolve().parent
@@ -53,6 +54,7 @@ else:  # pragma: no cover - invoked as script
         export_single_program,
         encode_bank_from_json,
         json_records_from_path,
+        deep_analyse,
     )
 
 
@@ -143,6 +145,149 @@ def _print_analyse_report(report: Dict[str, Any]) -> None:
             f"  Tempo min {tempo['min']} max {tempo['max']} "
             f"mean {tempo['mean']} median {tempo['median']}"
         )
+
+
+def _format_summary(summary: Dict[str, Any]) -> str:
+    if not summary:
+        return "n/a"
+    return (
+        f"count {summary['count']} | min {summary['min']} | max {summary['max']} | "
+        f"mean {summary['mean']} | median {summary['median']}"
+    )
+
+
+def _print_counter_series(series: List[Tuple[Any, int]], indent: int = 2) -> None:
+    pad = " " * indent
+    for value, count in series:
+        print(f"{pad}{value}: {count}")
+
+
+def _print_deep_report(report: Dict[str, Any]) -> None:
+    print(f"Patches analysed: {report['patch_count']}")
+    print(f"Total timbres   : {report['timbre_count']}")
+    print()
+
+    print("Voice modes:")
+    _print_counter_series(report["voice_modes"])
+    print()
+
+    effects = report["effects"]
+    delay = effects["delay"]
+    print("Delay FX:")
+    _print_counter_series(delay["type_counts"], indent=4)
+    print(f"    Sync enabled: {delay['sync_percent']}%")
+    print(f"    Time stats  : {_format_summary(delay['time'])}")
+    print(f"    Depth stats : {_format_summary(delay['depth'])}")
+    print()
+
+    mod = effects["mod"]
+    print("Mod FX:")
+    _print_counter_series(mod["type_counts"], indent=4)
+    print(f"    Speed stats : {_format_summary(mod['speed'])}")
+    print(f"    Depth stats : {_format_summary(mod['depth'])}")
+    print()
+
+    eq = effects["eq"]
+    print("EQ:")
+    print(f"    Hi freq  : {_format_summary(eq['hi_freq'])}")
+    print(f"    Hi gain  : {_format_summary(eq['hi_gain'])}")
+    print(f"    Low freq : {_format_summary(eq['low_freq'])}")
+    print(f"    Low gain : {_format_summary(eq['low_gain'])}")
+    print()
+
+    arp = report["arpeggiator"]
+    print("Arpeggiator:")
+    print(f"  Enabled percent: {arp['enabled_percent']}%")
+    if arp["types"]:
+        print("  Types:")
+        _print_counter_series(arp["types"], indent=6)
+    if arp["targets"]:
+        print("  Targets:")
+        _print_counter_series(arp["targets"], indent=6)
+    if arp["tempo"]:
+        print(f"  Tempo stats: {_format_summary(arp['tempo'])}")
+    print()
+
+    osc = report["oscillators"]
+    print("Oscillator 1:")
+    _print_counter_series(osc["osc1"]["wave_counts"], indent=4)
+    print(f"    Level stats : {_format_summary(osc['osc1']['level'])}")
+    if osc["osc1"]["dwgs_waves"]:
+        print("    DWGS usage:")
+        _print_counter_series(osc["osc1"]["dwgs_waves"], indent=8)
+    print()
+
+    print("Oscillator 2:")
+    _print_counter_series(osc["osc2"]["wave_counts"], indent=4)
+    print("    Modulation:")
+    _print_counter_series(osc["osc2"]["modulation_counts"], indent=8)
+    print(f"    Semitone stats: {_format_summary(osc['osc2']['semitone'])}")
+    print(f"    Tune stats    : {_format_summary(osc['osc2']['tune'])}")
+    print(f"    Level stats   : {_format_summary(osc['osc2']['level'])}")
+    print()
+
+    mixer = report["mixer"]
+    print("Mixer:")
+    print(f"  Noise level   : {_format_summary(mixer['noise_level'])}")
+    print(f"  Portamento    : {_format_summary(mixer['portamento_time'])}")
+    print()
+
+    filt = report["filter"]
+    print("Filter:")
+    _print_counter_series(filt["type_counts"], indent=4)
+    print(f"    Cutoff      : {_format_summary(filt['cutoff'])}")
+    print(f"    Resonance   : {_format_summary(filt['resonance'])}")
+    print(f"    EG intensity: {_format_summary(filt['eg_intensity'])}")
+    print(f"    Kbd track   : {_format_summary(filt['kbd_track'])}")
+    print()
+
+    amp = report["amp"]
+    print("Amplifier:")
+    print(f"  Level         : {_format_summary(amp['level'])}")
+    print(f"  Pan           : {_format_summary(amp['pan'])}")
+    print(f"  Velocity sense: {_format_summary(amp['velocity_sense'])}")
+    print(f"  Kbd track     : {_format_summary(amp['kbd_track'])}")
+    print(f"  Distortion on : {amp['distortion_count']} timbres")
+    print()
+
+    eg1 = report["eg1"]
+    print("EG1 (Filter):")
+    print(f"  Attack : {_format_summary(eg1['attack'])}")
+    print(f"  Decay  : {_format_summary(eg1['decay'])}")
+    print(f"  Sustain: {_format_summary(eg1['sustain'])}")
+    print(f"  Release: {_format_summary(eg1['release'])}")
+    print()
+
+    eg2 = report["eg2"]
+    print("EG2 (Amp):")
+    print(f"  Attack : {_format_summary(eg2['attack'])}")
+    print(f"  Decay  : {_format_summary(eg2['decay'])}")
+    print(f"  Sustain: {_format_summary(eg2['sustain'])}")
+    print(f"  Release: {_format_summary(eg2['release'])}")
+    print()
+
+    lfo = report["lfo"]
+    print("LFO1:")
+    _print_counter_series(lfo["lfo1"]["wave_counts"], indent=4)
+    print(f"    Frequency: {_format_summary(lfo['lfo1']['frequency'])}")
+    print(f"    Tempo sync: {lfo['lfo1']['sync_percent']}% of timbres")
+    print()
+
+    print("LFO2:")
+    _print_counter_series(lfo["lfo2"]["wave_counts"], indent=4)
+    print(f"    Frequency: {_format_summary(lfo['lfo2']['frequency'])}")
+    print(f"    Tempo sync: {lfo['lfo2']['sync_percent']}% of timbres")
+    print()
+
+    mod = report["mod_matrix"]
+    print("Modulation Matrix (non-zero routes):")
+    if mod["source_counts"]:
+        print("  Sources:")
+        _print_counter_series(mod["source_counts"], indent=6)
+    if mod["destination_counts"]:
+        print("  Destinations:")
+        _print_counter_series(mod["destination_counts"], indent=6)
+    print(f"  Intensity stats: {_format_summary(mod['intensity'])}")
 
 
 def _patch_index_type(value: str) -> int:
@@ -259,6 +404,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser_analyze.add_argument(
         "--json", action="store_true", help="Emit JSON instead of text"
+    )
+    parser_analyze.add_argument(
+        "--deep",
+        action="store_true",
+        help="Include full parameter statistics (oscillators, filters, envelopes, etc.)",
     )
 
     parser_export = subparsers.add_parser(
@@ -394,10 +544,24 @@ def cmd_encode(args: argparse.Namespace) -> int:
 def cmd_analyze(args: argparse.Namespace) -> int:
     patches = parse_sysex_file(args.file)
     if args.patch_index:
-        patch = select_patches(patches, args.patch_index)[0][1]
-        report = analyse_single_patch(patch)
+        selected = select_patches(patches, args.patch_index)
+        patch_list = [selected[0][1]]
     else:
-        report = analyse_patches(patches)
+        patch_list = patches
+
+    if args.deep:
+        records = [extract_full_parameters(p) for p in patch_list]
+        report = deep_analyse(records)
+        if args.json:
+            print(json.dumps(report, indent=2))
+        else:
+            _print_deep_report(report)
+        return 0
+
+    if args.patch_index:
+        report = analyse_single_patch(patch_list[0])
+    else:
+        report = analyse_patches(patch_list)
 
     if args.json:
         print(json.dumps(report, indent=2))
