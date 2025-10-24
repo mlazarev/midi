@@ -12,13 +12,13 @@ Dependencies:
 
 Examples:
   # List MIDI outputs
-  python implementations/korg/ms2000/tools/send_to_ms2000.py --list-outputs
+  python implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
 
   # Send the bundled factory bank to a port containing "MS2000"
-  python implementations/korg/ms2000/tools/send_to_ms2000.py
+  python implementations/korg/ms2000/tools/scripts/send_to_ms2000.py
 
   # Override file or port
-  python implementations/korg/ms2000/tools/send_to_ms2000.py \
+  python implementations/korg/ms2000/tools/scripts/send_to_ms2000.py \
       --file /path/to/your.syx --out "Your MIDI Interface"
 """
 
@@ -30,9 +30,9 @@ from pathlib import Path
 
 
 def project_root() -> Path:
-    # This file: <repo>/implementations/korg/ms2000/tools/send_to_ms2000.py
-    # repo root should be parents[4]
-    return Path(__file__).resolve().parents[4]
+    # This file: <repo>/implementations/korg/ms2000/tools/scripts/send_to_ms2000.py
+    # repo root should be parents[5]
+    return Path(__file__).resolve().parents[5]
 
 
 def default_bank_path() -> Path:

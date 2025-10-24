@@ -262,7 +262,7 @@ See `decode_sysex.py` for complete implementation:
 - `implementations/korg/ms2000/patches/OriginalPatches.syx` - 128 factory patches (complete bank)
 
 ### Tools
-- `implementations/korg/ms2000/tools/decode_sysex.py` - Python decoder for MS2000 SysEx files
+- `implementations/korg/ms2000/tools/wrappers/decode_sysex.py` - Python decoder for MS2000 SysEx files
 - `implementations/korg/ms2000/examples/original_patches_decoded.txt` - Example decoded output
 
 ### External Resources

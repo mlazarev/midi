@@ -24,10 +24,23 @@ ms2000/
 │   └── MS2000_MIDIimp.TXT      # Official MIDI implementation chart
 ├── guides/                      # How‑to and analysis guides
 │   └── PATCH_ANALYSIS_GUIDE.md # Techniques to analyze patch banks
-├── tools/                       # Python tools
-│   ├── decode_sysex.py         # Decode and display SysEx files
-│   ├── compare_patches.py      # Wrapper for CLI compare command
-│   └── send_to_ms2000.py       # Send SysEx to MS2000/MS2000R (wrapper)
+├── tools/                       # Python tooling
+│   ├── ms2000_cli.py          # Unified CLI (inspect/decode/analyze/compare/etc.)
+│   ├── lib/                   # Shared libraries
+│   │   └── ms2000_core.py     # Decode/encode utilities
+│   ├── wrappers/              # Backward-compatible entry points
+│   │   ├── analyze_patch_bank.py
+│   │   ├── compare_patches.py
+│   │   ├── decode_parameters.py
+│   │   ├── decode_sysex.py
+│   │   ├── export_single_program.py
+│   │   └── fix_sysex.py
+│   ├── scripts/               # Standalone helpers
+│   │   ├── copy_patch.py
+│   │   ├── generate_boc_detailed_reference.py
+│   │   └── send_to_ms2000.py
+│   └── docs/                  # Tool-specific documentation
+│       └── README_DECODE_PARAMETERS.md
 ├── patches/                     # Patch files
 │   ├── factory/
 │   │   └── FactoryBanks.syx    # Factory presets (128 patches)
@@ -41,8 +54,8 @@ ms2000/
 
 ### Decode a SysEx file
 ```bash
-cd tools
-python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
+python3 implementations/korg/ms2000/tools/ms2000_cli.py \
+        inspect implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 8
 ```
 
 Example output:
@@ -63,21 +76,20 @@ SysEx Header:
 
 ### Compare two patch banks
 ```bash
-python3 compare_patches.py file1.syx file2.syx
-# or directly
-python3 ms2000_cli.py compare file1.syx file2.syx
+python3 implementations/korg/ms2000/tools/ms2000_cli.py compare file1.syx file2.syx
 ```
 
 ### Send SysEx to MS2000
 ```bash
 # List available MIDI outputs
-python3 send_to_ms2000.py --list-outputs
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
 
 # Send the bundled factory bank to a port containing "MS2000"
-python3 send_to_ms2000.py
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py
 
 # Override port and delay (requires: pip install mido python-rtmidi)
-python3 send_to_ms2000.py --out "Your MIDI Port" --delay-ms 50
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py \
+        --out "Your MIDI Port" --delay-ms 50
 ```
 
 ## SysEx File Format
@@ -135,8 +147,8 @@ Decode MS2000 SysEx (.syx) files and display patch parameters.
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
+python3 implementations/korg/ms2000/tools/wrappers/decode_sysex.py \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
 ### decode_parameters.py
@@ -149,12 +161,12 @@ Emit full patch parameter data (all 254 bytes) as structured JSON.
 
 Usage:
 ```bash
-python3 implementations/korg/ms2000/tools/decode_parameters.py \
+python3 implementations/korg/ms2000/tools/wrappers/decode_parameters.py \
         implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
         implementations/korg/ms2000/examples/factory_banks.json
 ```
 
-See [`README_DECODE_PARAMETERS.md`](tools/README_DECODE_PARAMETERS.md) for details.
+See [`README_DECODE_PARAMETERS.md`](tools/docs/README_DECODE_PARAMETERS.md) for details.
 
 ### analyze_patch_bank.py
 
@@ -162,7 +174,7 @@ Summarize a bank: name tokens, voice modes, FX usage, arp, parameter ranges.
 
 Usage:
 ```bash
-python3 implementations/korg/ms2000/tools/analyze_patch_bank.py \
+python3 implementations/korg/ms2000/tools/wrappers/analyze_patch_bank.py \
         implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
@@ -172,8 +184,8 @@ Wrapper around the CLI `compare` subcommand for patch-by-patch diffs.
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 compare_patches.py <file1.syx> <file2.syx> [--patch-index N] [--json]
+python3 implementations/korg/ms2000/tools/wrappers/compare_patches.py \
+        <file1.syx> <file2.syx> [--patch-index N] [--json]
 ```
 
 ### send_to_ms2000.py
@@ -189,11 +201,10 @@ Defaults:
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 send_to_ms2000.py --list-outputs
-python3 send_to_ms2000.py                     # send bundled factory bank
-python3 send_to_ms2000.py --out "Your Port"   # choose a specific output
-python3 send_to_ms2000.py --file path\to\file.syx --delay-ms 50
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py                     # send bundled factory bank
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --out "Your Port"   # choose a specific output
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --file path\to\file.syx --delay-ms 50
 ```
 
 ### fix_sysex.py
@@ -202,8 +213,7 @@ Fix broken SysEx files (e.g., missing F7, zero‑padded).
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 fix_sysex.py <input.syx> [output.syx]
+python3 implementations/korg/ms2000/tools/wrappers/fix_sysex.py <input.syx> [output.syx]
 ```
 
 See [docs/SYSEX_TROUBLESHOOTING.md](docs/SYSEX_TROUBLESHOOTING.md) and top‑level [tools/SEND_SYSEX.md](../../../tools/SEND_SYSEX.md) for more.
@@ -214,8 +224,8 @@ Copy a patch within a bank (e.g., A01 → A02).
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 copy_patch.py <input.syx> <src_index 1..128> <dst_index 1..128> [-o output.syx]
+python3 implementations/korg/ms2000/tools/scripts/copy_patch.py \
+        <input.syx> <src_index 1..128> <dst_index 1..128> [-o output.syx]
 ```
 
 ### export_single_program.py
@@ -224,8 +234,8 @@ Export a single program to a CURRENT PROGRAM DATA DUMP (.syx, 0x40). Supports en
 
 Usage:
 ```bash
-cd implementations/korg/ms2000/tools
-python3 export_single_program.py <bank.syx> <index 1..128> [--v1|--v2] [-o out.syx]
+python3 implementations/korg/ms2000/tools/wrappers/export_single_program.py \
+        <bank.syx> <index 1..128> [--v1|--v2] [-o out.syx]
 ```
 
 ### ms2000_cli.py

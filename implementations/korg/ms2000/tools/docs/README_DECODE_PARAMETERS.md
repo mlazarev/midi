@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `decode_parameters.py` tool provides **complete** parameter decoding from Korg MS2000 SysEx files, including all synthesis parameters, effects, and modulation routing.
+The `decode_parameters.py` wrapper (in `tools/wrappers/`) provides **complete** parameter decoding from Korg MS2000 SysEx files, including all synthesis parameters, effects, and modulation routing.
 
 ## What's Decoded
 
@@ -63,7 +63,8 @@ For Split and Layer modes, both Timbre1 and Timbre2 are extracted with full para
 ### Decode Single Patch
 
 ```bash
-python3 decode_parameters.py BOCSunday.syx output.json --patch-index 0
+python3 implementations/korg/ms2000/tools/wrappers/decode_parameters.py \
+        BOCSunday.syx output.json --patch-index 0
 ```
 
 Output includes parameter summary:
@@ -83,7 +84,8 @@ Summary for 'Sunday Pad':
 ### Decode All Patches
 
 ```bash
-python3 decode_parameters.py BOCSunday.syx all_patches.json
+python3 implementations/korg/ms2000/tools/wrappers/decode_parameters.py \
+        BOCSunday.syx all_patches.json
 ```
 
 Outputs array of 128 patches with complete parameters.

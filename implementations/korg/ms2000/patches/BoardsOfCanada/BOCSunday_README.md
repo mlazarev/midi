@@ -95,7 +95,7 @@ python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/BoardsOfC
     --out "MS2000" --delay-ms 50
 
 # Or using send_to_ms2000.py (convenience wrapper)
-python3 implementations/korg/ms2000/tools/send_to_ms2000.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
 ```
 
 ### Via Hardware:

@@ -20,7 +20,7 @@ def decode():
     root = project_root()
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    from implementations.korg.ms2000.tools.ms2000_core import parse_sysex_file  # type: ignore
+    from implementations.korg.ms2000.tools.lib.ms2000_core import parse_sysex_file  # type: ignore
 
     boc_path = root / "implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx"
     patches = parse_sysex_file(str(boc_path))

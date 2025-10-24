@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 if __package__:
-    from .ms2000_core import (
+    from .lib.ms2000_core import (
         analyse_patches,
         analyse_single_patch,
         extract_full_parameters,
@@ -35,7 +35,9 @@ if __package__:
         export_single_program,
     )
 else:  # pragma: no cover - invoked as script
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    tools_dir = Path(__file__).resolve().parent
+    sys.path.insert(0, str(tools_dir))
+    sys.path.insert(0, str(tools_dir / "lib"))
     from ms2000_core import (  # type: ignore
         analyse_patches,
         analyse_single_patch,

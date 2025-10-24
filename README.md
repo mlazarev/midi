@@ -119,22 +119,23 @@ cat docs/general/LEARNING_SUMMARY.md
 
 **2. Decode a SysEx file (Factory):**
 ```bash
-cd implementations/korg/ms2000/tools
-python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
+python3 implementations/korg/ms2000/tools/ms2000_cli.py \
+        inspect implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 8
 ```
 
 **3. Compare two patch banks:**
 ```bash
-python3 compare_patches.py file1.syx file2.syx
+python3 implementations/korg/ms2000/tools/ms2000_cli.py compare file1.syx file2.syx
 ```
 
 **4. Send a SysEx file to hardware:**
 ```bash
 # List MIDI outputs
-python3 tools/send_sysex.py --list-outputs
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
 
 # Send a .syx file (requires 'mido' + 'python-rtmidi')
-python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
+python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py \
+    --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
     --out "MS2000" --delay-ms 50
 ```
 
@@ -152,7 +153,7 @@ For newcomers to MIDI and SysEx, we recommend this progression:
    - Study the decoded output
 
 3. **Deep dive** → Read the decoder source code
-   - [`decode_sysex.py`](implementations/korg/ms2000/tools/decode_sysex.py)
+   - [`decode_sysex.py`](implementations/korg/ms2000/tools/wrappers/decode_sysex.py)
    - Understand 7-to-8 bit decoding algorithm
    - See how patch parameters are extracted
 
