@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+# v1.1.0 (2025-10-21)
+
+Highlights
+- Introduced `ms2000_cli.py` `compare` subcommand for patch/bank diffs with JSON output
+- Reorganized MS2000 tooling into `lib/`, `wrappers/`, `scripts/`, and `docs/` for clarity
+
+Docs
+- Updated README files and decoder docs to reflect new tool locations and usage
+
 ## v1.0.0 (2025-10-19)
 
 Highlights
