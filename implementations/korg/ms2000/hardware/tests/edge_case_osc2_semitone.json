@@ -1,0 +1,35 @@
+[
+  {
+    "name": "HW OSC2 Down",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "osc2": {"wave": "Square", "semitone": -12, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 0, "osc2_level": 120, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 90, "resonance": 20, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": 0, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  },
+  {
+    "name": "HW OSC2 Center",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "osc2": {"wave": "Square", "semitone": 0, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 0, "osc2_level": 120, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 90, "resonance": 20, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": 0, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  },
+  {
+    "name": "HW OSC2 Up",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "osc2": {"wave": "Square", "semitone": 12, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 0, "osc2_level": 120, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 90, "resonance": 20, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": 0, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  }
+]

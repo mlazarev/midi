@@ -1,0 +1,20 @@
+[
+  {
+    "name": "HW Mod Depths",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "patch": {
+        "patch1": {"source": "EG1", "destination": "PITCH", "intensity": -63},
+        "patch2": {"source": "EG2", "destination": "OSC2PITCH", "intensity": -1},
+        "patch3": {"source": "LFO1", "destination": "CUTOFF", "intensity": 0},
+        "patch4": {"source": "MIDI1", "destination": "RESONANCE", "intensity": 63}
+      },
+      "osc1": {"wave": "Saw"},
+      "osc2": {"wave": "Square", "semitone": 0, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 100, "osc2_level": 100, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 64, "resonance": 32, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": 0, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "name": "HW Pan Center",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "effects": {
+      "delay": {"type": "L/R Delay", "sync": false, "time": 50, "depth": 64, "timebase": 0},
+      "mod_fx": {"type": "Cho/Flg", "speed": 20, "depth": 32},
+      "eq": {"hi_freq": 20, "hi_gain": 64, "low_freq": 15, "low_gain": 61}
+    },
+    "arpeggiator": {"on": false, "tempo": 120, "latch": false, "target": 0, "keysync": false, "type": "Up", "range": 1},
+    "timbre1": {
+      "voice": {"portamento_time": 3},
+      "osc1": {"wave": "Saw", "ctrl1": 10, "ctrl2": 20},
+      "osc2": {"wave": "Square", "semitone": 0, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 90, "osc2_level": 80, "noise_level": 10},
+      "filter": {
+        "type": "12dB LPF",
+        "cutoff": 70,
+        "resonance": 20,
+        "eg1_intensity": 0,
+        "velocity_sense": 0,
+        "kbd_track": 0
+      },
+      "amp": {
+        "level": 100,
+        "panpot": 0,
+        "switch": "EG2",
+        "distortion": false,
+        "velocity_sense": 0,
+        "kbd_track": 0
+      }
+    }
+  }
+]

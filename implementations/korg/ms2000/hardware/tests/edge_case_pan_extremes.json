@@ -1,0 +1,26 @@
+[
+  {
+    "name": "HW Pan Left",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "osc1": {"wave": "Saw"},
+      "osc2": {"wave": "Square", "semitone": 0, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 90, "osc2_level": 80, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 64, "resonance": 32, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": -64, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  },
+  {
+    "name": "HW Pan Right",
+    "voice_mode": "Single",
+    "timbre_voice": 1,
+    "timbre1": {
+      "osc1": {"wave": "Saw"},
+      "osc2": {"wave": "Square", "semitone": 0, "tune": 0, "modulation": "Off"},
+      "mixer": {"osc1_level": 90, "osc2_level": 80, "noise_level": 0},
+      "filter": {"type": "12dB LPF", "cutoff": 64, "resonance": 32, "eg1_intensity": 0, "velocity_sense": 0, "kbd_track": 0},
+      "amp": {"level": 127, "panpot": 63, "switch": "EG2", "distortion": false, "velocity_sense": 0, "kbd_track": 0}
+    }
+  }
+]
