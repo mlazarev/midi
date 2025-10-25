@@ -5,13 +5,16 @@ Practical tools and curated content for Korg MS2000/MS2000R sound designers and 
 - Ship ready‑to‑use Boards of Canada–style banks
 - Decode and export factory banks for inspection and tooling
 
+> **New in v1.3.0**  
+> Offset‑64 parameters now round-trip exactly (pan, modulation depths, patch intensities). Boards of Canada experiments now live in a companion repository (`boc-sound-lab`) that reuses this toolkit.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 
 ## 🎯 What You Can Do Here
 
 - Send banks to hardware quickly (single or full bank)
-- Generate BOC‑inspired banks from code (with variety and safe parameter ranges)
+- Generate BOC‑inspired banks from code (factory evolutions, originals, and legacy Sunday builds)
 - Analyze banks (FX usage, arp, naming, summary stats) and export JSON
 - Inspect and modify patches at the byte level if needed
 
@@ -43,13 +46,10 @@ Complete SysEx workflow for Korg MS2000: generator, decoder, analyzer, sender.
 
 **Highlights for sound designers:**
 - Banks ready to send:
-  - Factory: implementations/korg/ms2000/patches/factory/FactoryBanks.syx
-  - Boards of Canada: implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
-- BOCSunday generator creates 128‑program bank:
-  - 16 handcrafted patches (A01–A16)
-  - 112 additional varied patches (pads/leads/bass/keys/arp) influenced by Factory distributions
-- Robust 7→8 encoding (variant v2) verified on hardware
-- Tools for compare, analyze, JSON export, single‑program dumps
+  - Factory: `implementations/korg/ms2000/patches/factory/FactoryBanks.syx`
+- Robust 7→8 encoding (variant v2) and offset‑64 handling, hardware-verified in v1.3.0
+- Tools for compare, analyze, JSON export, and single-program dumps ship with matching CLI wrappers
+- Boards of Canada experiments now live in a companion repository (see below) so the core toolkit stays device-focused.
 
 **Quick Start:**
 ```bash
@@ -59,17 +59,10 @@ python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 
 See [MS2000 README](implementations/korg/ms2000/README.md) for full documentation.
 
-### Boards of Canada Example Banks
+### Boards of Canada Project
 
-- BOCSunday.syx — new BOC bank: 16 handcrafted + 112 algorithmic patches
-  - Generator: implementations/korg/ms2000/patches/BoardsOfCanada/create_boc_patches.py
-  - Ready‑to‑send bank at: implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx
-
-Send to hardware:
-```bash
-python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/BoardsOfCanada/BOCSunday.syx \
-    --out "MS2000" --delay-ms 50
-```
+The Boards of Canada sound-design experiments (factory evolutions, original banks, generators, and detailed documentation) now live in a separate repository so this project can focus purely on MIDI tooling.  
+👉 Visit **`boc-sound-lab`** (companion repo) to keep exploring those patches. The scripts there reuse this toolkit directly.
 
 ## 🏗️ Repository Structure
 

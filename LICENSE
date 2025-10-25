@@ -30,7 +30,7 @@ may be subject to their own licenses:
 - Korg MS2000 MIDI Implementation Chart: © Korg Inc.
   Used for educational purposes under fair use.
 
-- Factory patch data (OriginalPatches.syx): Korg MS2000 factory presets
+- Factory patch data (FactoryBanks.syx): Korg MS2000 factory presets.
   Included for educational and archival purposes.
 
 The software tools and educational documentation created in this project are

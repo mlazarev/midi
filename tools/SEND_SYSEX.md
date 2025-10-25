@@ -21,8 +21,7 @@ python3 tools/send_sysex.py --list-outputs
 
 Send a file:
 ```
-python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/OriginalPatches.syx \
-    --out "MS2000" --delay-ms 50
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \n    --out "MS2000" --delay-ms 50
 ```
 
 Options:
@@ -36,4 +35,3 @@ Notes:
 - Files may contain one or more SysEx messages back‑to‑back (F0...F7 sequences). The tool sends each in order.
 - Use `--delay-ms` for devices that need pacing between consecutive SysEx messages.
 - Use `--auto-fix` with care. If a file is malformed (e.g., padded with zeros), this can append F7 to the final message.
-

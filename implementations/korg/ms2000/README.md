@@ -14,6 +14,9 @@ The Korg MS2000 is a virtual analog synthesizer featuring:
 
 This implementation provides tools to decode, analyze, and work with MS2000 patch data stored in SysEx format.
 
+> **What’s new in v1.3.0?**  
+> All offset‑64 parameters (pan, modulation depths, patch intensities, etc.) now encode/decode exactly the way the hardware does. The change is backed by new helper utilities in `ms2000_core.py` and byte-for-byte regression tests, so JSON edits will always match what the synth stores internally.
+
 ## Directory Structure
 
 ```
@@ -37,17 +40,15 @@ ms2000/
 │   │   └── fix_sysex.py
 │   ├── scripts/               # Standalone helpers
 │   │   ├── copy_patch.py
-│   │   ├── generate_boc_detailed_reference.py
+│   │   ├── roundtrip_test.py
 │   │   └── send_to_ms2000.py
 │   └── docs/                  # Tool-specific documentation
 │       └── README_DECODE_PARAMETERS.md
 ├── patches/                     # Patch files
 │   ├── factory/
-│   │   └── FactoryBanks.syx    # Factory presets (128 patches)
-│   └── BoardsOfCanada/
-│       └── BOCSunday.syx       # BOC Sunday bank
+│   │   └── FactoryBanks.syx          # Factory presets (128 patches)
 └── examples/                    # Example outputs
-    └── factory_banks.json      # Decoded factory patches (JSON)
+    └── factory_banks.json            # Decoded factory patches (JSON)
 ```
 
 ## Quick Start
@@ -166,7 +167,7 @@ python3 implementations/korg/ms2000/tools/wrappers/decode_parameters.py \
         implementations/korg/ms2000/examples/factory_banks.json
 ```
 
-See [`README_DECODE_PARAMETERS.md`](tools/docs/README_DECODE_PARAMETERS.md) for details.
+See [`README_DECODE_PARAMETERS.md`](tools/docs/README_DECODE_PARAMETERS.md) for details, including the v1.3.0 offset-64 corrections that ensure pan, modulation depths, and matrix intensities match hardware values byte-for-byte.
 
 ### analyze_patch_bank.py
 
@@ -234,74 +235,19 @@ python3 implementations/korg/ms2000/tools/scripts/copy_patch.py \
         <input.syx> <src_index 1..128> <dst_index 1..128> [-o output.syx]
 ```
 
-### export_single_program.py
+## Factory Patch Bank
 
-Export a single program to a CURRENT PROGRAM DATA DUMP (.syx, 0x40). Supports encoding variants.
+- **FactoryBanks.syx** — the untouched factory dump (128 programs).
 
-Usage:
-```bash
-python3 implementations/korg/ms2000/tools/wrappers/export_single_program.py \
-        <bank.syx> <index 1..128> [--v1|--v2] [-o out.syx]
-```
+Boards of Canada experiments (factory evolutions, original banks, generators, guides) have moved to the companion **boc-sound-lab** repository. They reuse this toolkit directly while keeping the MIDI codebase focused on device support.
 
-### ms2000_cli.py
-
-Unified entry point for inspection, decoding, analysis, exporting, and repair.
-
-Subcommands:
-- `inspect` — quick human/JSON summary of whole bank or a single patch
-- `decode` — full parameter JSON dump (bank or `--patch-index`)
-- `analyze` — statistical overview or single-patch snapshot
-- `compare` — diff banks or individual patches, human-readable or JSON
-- `export` — write a CURRENT PROGRAM DATA DUMP for a chosen patch
-- `repair` — append missing F7 terminator and warn about short banks
-
-Usage examples:
-```bash
-# Summarise first few patches (text)
-python3 ms2000_cli.py inspect ../patches/factory/FactoryBanks.syx --limit 5
-
-# Decode patch A01 to JSON file
-python3 ms2000_cli.py decode ../patches/factory/FactoryBanks.syx \
-        --patch-index 1 --output ../../examples/factory_A01.json
-
-# Encode JSON back into a bank (preserving header from template)
-python3 ms2000_cli.py encode ../../examples/factory_banks.json \
-        ../patches/factory/FactoryBanks_roundtrip.syx --template ../patches/factory/FactoryBanks.syx
-
-# Analyse complete bank as JSON
-python3 ms2000_cli.py analyze ../patches/factory/FactoryBanks.syx --json
-
-# Compare a single patch between two banks
-python3 ms2000_cli.py compare ../patches/factory/FactoryBanks.syx \
-        ../patches/BoardsOfCanada/BOCSunday.syx --patch-index 1
-```
-
-### create_boc_patches.py
-
-Generate the BOCSunday bank and write BOCSunday.syx into `patches/BoardsOfCanada/`.
-
-Usage:
-```bash
-cd implementations/korg/ms2000/patches/BoardsOfCanada
-python3 create_boc_patches.py
-```
-
-## Factory Patches
-
-The included **FactoryBanks.syx** contains 128 patches:
-- **A01-H12 (123 patches)**: Original factory presets
-- **H13-H16 (5 patches)**: Blank placeholders to complete the bank
-
-**Sound Categories:**
+**Factory sound categories (A01–H16 excerpt):**
 - **Leads:** Stab Saw, Synth Tp, Killa Lead, Edge Lead
 - **Bass:** MG Bass, Boost Bass, Drive Bass, Fat Bass
 - **Pads:** PWM Strings, Royal Pad, Stream Pad, Silk Pad
 - **Keys:** Vintage EP, Lounge Organ, Reed Piano
 - **Effects:** Evolution, Ice Field, Bad Dreem, Thunder
 - **Vocoder:** Voice /A/, Vocoder1, Vocoder8, Vocoder16
-
-Full patch list available in `examples/factory_banks.json`.
 
 ## Technical Details
 

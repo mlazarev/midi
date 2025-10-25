@@ -195,7 +195,7 @@ def decode_korg_7bit(encoded_data):
 
 ### File Structure
 
-**OriginalPatches.syx (included in this repo):**
+**FactoryBanks.syx (included in this repo):**
 ```
 Structure:
   - 5 bytes: Header (F0 42 30 58 4C)
@@ -259,11 +259,13 @@ See `decode_sysex.py` for complete implementation:
 - `implementations/korg/ms2000/docs/SYSEX_STRUCTURE.txt` - Structure diagrams
 
 ### SysEx Files
-- `implementations/korg/ms2000/patches/OriginalPatches.syx` - 128 factory patches (complete bank)
+- `implementations/korg/ms2000/patches/factory/FactoryBanks.syx` - 128 factory patches (complete bank)
+
+> Boards of Canada study banks now live in the companion `boc-sound-lab` project, which reuses this toolkit.
 
 ### Tools
-- `implementations/korg/ms2000/tools/wrappers/decode_sysex.py` - Python decoder for MS2000 SysEx files
-- `implementations/korg/ms2000/examples/original_patches_decoded.txt` - Example decoded output
+- `implementations/korg/ms2000/tools/ms2000_cli.py` - Unified CLI for inspect/decode/analyze/encode/compare
+- `implementations/korg/ms2000/examples/factory_banks.json` - Decoded factory patches (offset‑64 corrected)
 
 ### External Resources
 - MIDI Association (official specs): https://www.midi.org/

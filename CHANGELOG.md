@@ -12,8 +12,8 @@ Highlights
   - Patch matrix intensity values now correct
   - All parameters now match hardware values exactly (hardware-verified)
 - **New BOC Patch Banks**: Created two complete Boards of Canada style banks (128 patches each)
-  - `factory_evolutions.syx`: Factory patches transformed with authentic BOC characteristics
-  - `boc_originals.syx`: 128 completely original patches designed from BOC principles
+  - `factory_evolutions.syx`: Factory patches transformed with authentic BOC characteristics *(now maintained in the companion `boc-sound-lab` repository)*
+  - `boc_originals.syx`: 128 completely original patches designed from BOC principles *(now maintained in `boc-sound-lab`)*
   - Both banks based on comprehensive "How to Make Boards of Canada Sounds" guide analysis
 - Re-decoded `factory_banks.json` with corrected offset-64 values
 
@@ -24,21 +24,21 @@ Core Changes
 - Comprehensive roundtrip testing confirms byte-perfect encoding
 
 New Scripts
-- `create_boc_evolutions.py`: Transforms factory patches with BOC characteristics
+- `create_boc_evolutions.py`: Transforms factory patches with BOC characteristics *(now part of `boc-sound-lab`)*
   - L/R Delay with high depth, Chorus/Flanger modulation
   - 12dB LPF with low resonance, OSC2 interval detuning
   - LFO modulation (Triangle→Pitch, Sine→Cutoff)
   - Long release times, subtle noise for analog texture
-- `create_boc_originals.py`: Generates original BOC patches from 5 archetypes
+- `create_boc_originals.py`: Generates original BOC patches from 5 archetypes *(now part of `boc-sound-lab`)*
   - Classic BOC Pad (35%), Detuned Lead (30%), DWGS Texture (20%)
   - Ring Mod Bell (10%), Arpeggiator Sequence (5%)
   - All patches crafted from scratch using authentic BOC recipe principles
 
 Patch Banks
-- `patches/factory/factory_evolutions.syx`: 128 BOC-transformed factory patches
-- `patches/factory/boc_originals.syx`: 128 original BOC-style patches
-- `examples/factory_evolutions.json`: JSON for factory evolutions
-- `examples/boc_originals.json`: JSON for original BOC patches
+- `patches/factory/factory_evolutions.syx`: 128 BOC-transformed factory patches *(relocated to `boc-sound-lab`)*
+- `patches/factory/boc_originals.syx`: 128 original BOC-style patches *(relocated to `boc-sound-lab`)*
+- `examples/factory_evolutions.json`: JSON for factory evolutions *(relocated to `boc-sound-lab`)*
+- `examples/boc_originals.json`: JSON for original BOC patches *(relocated to `boc-sound-lab`)*
 
 Documentation
 - All patches feature BOC-style evocative naming (e.g., "Amber Aurora", "Dusk Memory")
@@ -55,11 +55,12 @@ Technical Notes
 
 Highlights
 - Encoder rebuild no longer relies on `raw_hex`; modulation routing offsets fixed and new fields (`timbre_voice`, delay timebase, LFO tempo values) round out structured JSON.
-- Factory JSON refreshed (`factory_banks.json`, `factory_evolutions.json`) with canonical schema, index/slot metadata, and level/pan safeguards for every patch.
+- Factory JSON refreshed (`factory_banks.json`) with canonical schema, index/slot metadata, and level/pan safeguards for every patch.
 - Documentation tightened around the decode/encode workflow and the CLI now carries motion/vocoder regions forward automatically.
 
 Docs
 - Rewrote decoder guide to reflect the raw-free pipeline and new JSON sample.
+- Added cross-project note: Boards of Canada experiment assets relocated to the companion `boc-sound-lab` repo (the toolkit retains the core factory bank only).
 
 # v1.1.0 (2025-10-21)
 

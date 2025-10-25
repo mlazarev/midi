@@ -23,19 +23,22 @@ What you can learn
 - Parameter ranges: summaries (min/max/mean/median) for modulation speed/depth, delay time/depth.
 
 How to run the analyzer
-- Use the generic analyzer (works for any MS2000 bank):
+- Use the unified CLI (works for any MS2000 bank, including the new BoC sets shipped in v1.3.0):
 ```
-python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx
+python3 implementations/korg/ms2000/tools/ms2000_cli.py analyze \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
 - Optional JSON output:
 ```
-python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --json > report.json
+python3 implementations/korg/ms2000/tools/ms2000_cli.py analyze \
+        implementations/korg/ms2000/patches/factory/FactoryBanks.syx --json > report.json
 ```
 
 - Limit analysis to first N patches:
 ```
-python implementations/korg/ms2000/tools/analyze_patch_bank.py implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 32
+python3 implementations/korg/ms2000/tools/ms2000_cli.py analyze \
+        /path/to/your_bank.syx --limit 32
 ```
 
 Interpreting results

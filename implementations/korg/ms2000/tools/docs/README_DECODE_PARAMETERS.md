@@ -14,6 +14,7 @@ Key features:
 - Human‑readable JSON covering voice mode, global FX, both timbres, envelopes, LFOs, modulation matrix, and motion data placeholders.
 - Round‑trip safe: every field that is emitted is consumed by the encoder; no `raw_hex` is required.
 - Works on full banks or a single program (`--patch-index`).
+- Offset‑64 aware: OSC2 pitch offsets, filter modulation depths, amp pan/velocity, and modulation intensities are translated with the dedicated `_to_offset64/_from_offset64` helpers introduced in v1.3.0, so JSON values map exactly to hardware.
 
 ## Decoded Parameters
 
@@ -32,6 +33,7 @@ Each patch is 254 bytes. The decoder exposes:
   - LFO1 / LFO2: waveform, frequency, tempo sync flag, serialized tempo value.
   - Modulation matrix: four patches (source, destination, signed intensity).
 - **System block** — `system.base_patch` retains the original 254 decoded bytes (motion sequencer lanes, vocoder config, reserved regions). Leave it untouched unless you intend to manipulate those areas directly.
+- **Offset-64 fields** — Any parameter documented as `-64..+63` (e.g., panpot, EG intensity, patch intensity) is stored in JSON as the human-readable signed value; the encoder converts it to the MS2000’s offset-64 byte form automatically.
 
 ## Encoding Back to SysEx
 
@@ -39,8 +41,8 @@ After editing the JSON you can rebuild a bank. If you want to reuse header metad
 
 ```bash
 python3 implementations/korg/ms2000/tools/ms2000_cli.py encode \
-  implementations/korg/ms2000/examples/factory_evolutions.json \
-  implementations/korg/ms2000/patches/factory/factory_evolutions.syx \
+  implementations/korg/ms2000/examples/factory_banks.json \
+  /tmp/factory_roundtrip.syx \
   --template implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
