@@ -261,7 +261,6 @@ See `decode_sysex.py` for complete implementation:
 ### SysEx Files
 - `implementations/korg/ms2000/patches/factory/FactoryBanks.syx` - 128 factory patches (complete bank)
 
-> Boards of Canada study banks now live in the companion `boc-sound-lab` project, which reuses this toolkit.
 
 ### Tools
 - `implementations/korg/ms2000/tools/ms2000_cli.py` - Unified CLI for inspect/decode/analyze/encode/compare

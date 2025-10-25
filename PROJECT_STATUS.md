@@ -7,7 +7,6 @@ Version: v1.3.0
 ### MS2000 Tools & Banks
 - [x] Robust SysEx encoder/decoder (Korg 7→8 bit, variant v2) with offset‑64 helpers (v1.3.0); structured JSON now feeds the encoder end-to-end
 - [x] Factory bank included: `patches/factory/FactoryBanks.syx`
-- [x] Boards of Canada style banks and generators relocated to the companion `boc-sound-lab` repository (kept in sync via shared tooling)
 - [x] Tools:
   - [x] `ms2000_cli.py` — unified inspect/decode/analyze/export/repair
   - [x] `decode_sysex.py` — legacy wrapper (inspect)

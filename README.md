@@ -1,12 +1,12 @@
-# General MIDI + Korg MS2000 SysEx Tools, Banks, and BOC Patch Generation
+# General MIDI + Korg MS2000 SysEx Tools and Patch Generation
 
 Practical tools and curated content for Korg MS2000/MS2000R sound designers and developers:
 - Generate, analyze, and send complete 128‑program banks
-- Ship ready‑to‑use Boards of Canada–style banks
+- Prototype and iterate on custom sound-design banks
 - Decode and export factory banks for inspection and tooling
 
 > **New in v1.3.0**  
-> Offset‑64 parameters now round-trip exactly (pan, modulation depths, patch intensities). Boards of Canada experiments now live in a companion repository (`boc-sound-lab`) that reuses this toolkit.
+> Offset‑64 parameters now round-trip exactly (pan, modulation depths, patch intensities) thanks to dedicated helpers in the encoder/decoder.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
@@ -14,7 +14,7 @@ Practical tools and curated content for Korg MS2000/MS2000R sound designers and 
 ## 🎯 What You Can Do Here
 
 - Send banks to hardware quickly (single or full bank)
-- Generate BOC‑inspired banks from code (factory evolutions, originals, and legacy Sunday builds)
+- Generate custom banks from code (factories, experiments, internal projects)
 - Analyze banks (FX usage, arp, naming, summary stats) and export JSON
 - Inspect and modify patches at the byte level if needed
 
@@ -49,7 +49,6 @@ Complete SysEx workflow for Korg MS2000: generator, decoder, analyzer, sender.
   - Factory: `implementations/korg/ms2000/patches/factory/FactoryBanks.syx`
 - Robust 7→8 encoding (variant v2) and offset‑64 handling, hardware-verified in v1.3.0
 - Tools for compare, analyze, JSON export, and single-program dumps ship with matching CLI wrappers
-- Boards of Canada experiments now live in a companion repository (see below) so the core toolkit stays device-focused.
 
 **Quick Start:**
 ```bash
@@ -58,11 +57,6 @@ python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 ```
 
 See [MS2000 README](implementations/korg/ms2000/README.md) for full documentation.
-
-### Boards of Canada Project
-
-The Boards of Canada sound-design experiments (factory evolutions, original banks, generators, and detailed documentation) now live in a separate repository so this project can focus purely on MIDI tooling.  
-👉 Visit **`boc-sound-lab`** (companion repo) to keep exploring those patches. The scripts there reuse this toolkit directly.
 
 ## 🏗️ Repository Structure
 

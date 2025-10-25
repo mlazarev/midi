@@ -23,7 +23,7 @@ What you can learn
 - Parameter ranges: summaries (min/max/mean/median) for modulation speed/depth, delay time/depth.
 
 How to run the analyzer
-- Use the unified CLI (works for any MS2000 bank, including the new BoC sets shipped in v1.3.0):
+- Use the unified CLI (works for any MS2000 bank, including any custom sets you create):
 ```
 python3 implementations/korg/ms2000/tools/ms2000_cli.py analyze \
         implementations/korg/ms2000/patches/factory/FactoryBanks.syx

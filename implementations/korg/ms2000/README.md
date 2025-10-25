@@ -239,8 +239,6 @@ python3 implementations/korg/ms2000/tools/scripts/copy_patch.py \
 
 - **FactoryBanks.syx** — the untouched factory dump (128 programs).
 
-Boards of Canada experiments (factory evolutions, original banks, generators, guides) have moved to the companion **boc-sound-lab** repository. They reuse this toolkit directly while keeping the MIDI codebase focused on device support.
-
 **Factory sound categories (A01–H16 excerpt):**
 - **Leads:** Stab Saw, Synth Tp, Killa Lead, Edge Lead
 - **Bass:** MG Bass, Boost Bass, Drive Bass, Fat Bass
