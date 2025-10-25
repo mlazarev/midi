@@ -214,8 +214,8 @@ def _extract_timbre(d: bytes, offset: int) -> Dict[str, Any]:
                 ["Off", "Ring", "Sync", "Ring+Sync"], osc2_mod_val, "MOD"
             ),
             "mod_value": osc2_mod_val,
-            "semitone": _signed(d[offset + 13] & 0x7F),
-            "tune": _signed(d[offset + 14] & 0x7F),
+            "semitone": _from_offset64(d[offset + 13] & 0x7F),
+            "tune": _from_offset64(d[offset + 14] & 0x7F),
         },
         "mixer": {
             "osc1_level": d[offset + 16],
@@ -229,17 +229,17 @@ def _extract_timbre(d: bytes, offset: int) -> Dict[str, Any]:
             "type_value": filt_type_val,
             "cutoff": d[offset + 20],
             "resonance": d[offset + 21],
-            "eg1_intensity": _signed(d[offset + 22] & 0x7F),
-            "velocity_sense": _signed(d[offset + 23] & 0x7F),
-            "kbd_track": _signed(d[offset + 24] & 0x7F),
+            "eg1_intensity": _from_offset64(d[offset + 22] & 0x7F),
+            "velocity_sense": _from_offset64(d[offset + 23] & 0x7F),
+            "kbd_track": _from_offset64(d[offset + 24] & 0x7F),
         },
         "amp": {
             "level": d[offset + 25],
-            "panpot": _signed(d[offset + 26] & 0x7F),
+            "panpot": _from_offset64(d[offset + 26] & 0x7F),
             "switch": "GATE" if (d[offset + 27] & 0x01) else "EG2",
             "distortion": bool(d[offset + 27] & 0x01),
-            "kbd_track": _signed(d[offset + 29] & 0x7F),
-            "velocity_sense": _signed(d[offset + 28] & 0x7F),
+            "kbd_track": _from_offset64(d[offset + 29] & 0x7F),
+            "velocity_sense": _from_offset64(d[offset + 28] & 0x7F),
         },
         "eg1": {
             "attack": d[offset + 30],
@@ -279,7 +279,7 @@ def _extract_timbre(d: bytes, offset: int) -> Dict[str, Any]:
                     (d[offset + 44 + (i * 2)] >> 4) & 0x0F,
                     "DEST",
                 ),
-                "intensity": _signed(d[offset + 45 + (i * 2)] & 0x7F),
+                "intensity": _from_offset64(d[offset + 45 + (i * 2)] & 0x7F),
             }
             for i in range(4)
         },
@@ -812,10 +812,24 @@ def _lookup(options: Sequence[str], value: Any, default: int = 0) -> int:
 
 
 def _to_signed_7bit(value: Any) -> int:
+    """DEPRECATED: This was incorrectly used for MS2000 offset-64 encoding."""
     value = int(value)
     if value < -64 or value > 63:
         raise ValueError(f"Signed 7-bit value out of range: {value}")
     return (value + 128) & 0x7F if value < 0 else value & 0x7F
+
+
+def _to_offset64(value: Any, min_val: int = -64, max_val: int = 63) -> int:
+    """Encode MS2000 offset-64 format: value range min_val~0~max_val maps to 0~64~(64+max_val)."""
+    value = int(value)
+    if value < min_val or value > max_val:
+        raise ValueError(f"Offset-64 value out of range {min_val}~{max_val}: {value}")
+    return value + 64
+
+
+def _from_offset64(byte_value: int) -> int:
+    """Decode MS2000 offset-64 format: byte 0~64~127 maps to -64~0~63."""
+    return byte_value - 64
 
 
 def _write_masked(data: bytearray, index: int, value: int, mask: int) -> None:
@@ -911,8 +925,8 @@ def build_patch_bytes(record: Dict[str, Any]) -> bytes:
         mod_idx = _lookup(MOD_SELECT, osc2.get("modulation", "Off"), osc2.get("mod_value", 0))
         _write_masked(data, offset + 12, wave2_idx, 0x03)
         _write_masked(data, offset + 12, (mod_idx & 0x03) << 4, 0x30)
-        _write_masked(data, offset + 13, _to_signed_7bit(osc2.get("semitone", 0)), 0x7F)
-        _write_masked(data, offset + 14, _to_signed_7bit(osc2.get("tune", 0)), 0x7F)
+        _write_masked(data, offset + 13, _to_offset64(osc2.get("semitone", 0), -24, 24), 0x7F)
+        _write_masked(data, offset + 14, _to_offset64(osc2.get("tune", 0)), 0x7F)
 
         mixer = timbre.get("mixer", {})
         data[offset + 16] = _clamp_byte(mixer.get("osc1_level", 0))
@@ -924,13 +938,13 @@ def build_patch_bytes(record: Dict[str, Any]) -> bytes:
         _write_masked(data, offset + 19, filter_idx, 0x03)
         data[offset + 20] = _clamp_byte(filt.get("cutoff", 0))
         data[offset + 21] = _clamp_byte(filt.get("resonance", 0))
-        _write_masked(data, offset + 22, _to_signed_7bit(filt.get("eg1_intensity", 0)), 0x7F)
-        _write_masked(data, offset + 23, _to_signed_7bit(filt.get("velocity_sense", 0)), 0x7F)
-        _write_masked(data, offset + 24, _to_signed_7bit(filt.get("kbd_track", 0)), 0x7F)
+        _write_masked(data, offset + 22, _to_offset64(filt.get("eg1_intensity", 0)), 0x7F)
+        _write_masked(data, offset + 23, _to_offset64(filt.get("velocity_sense", 0)), 0x7F)
+        _write_masked(data, offset + 24, _to_offset64(filt.get("kbd_track", 0)), 0x7F)
 
         amp = timbre.get("amp", {})
         data[offset + 25] = _clamp_byte(amp.get("level", 0))
-        _write_masked(data, offset + 26, _to_signed_7bit(amp.get("panpot", 0)), 0x7F)
+        _write_masked(data, offset + 26, _to_offset64(amp.get("panpot", 0)), 0x7F)
         # Byte 27: Bit 6 = Amp Switch, Bit 0 = Distortion (both in same byte!)
         # Bit 6 also acts as "magic bit" for Single/Split modes (required for amp to work)
         gate_flag = 0x40 if str(amp.get("switch", "EG2")).upper() == "GATE" else 0x00
@@ -941,8 +955,8 @@ def build_patch_bytes(record: Dict[str, Any]) -> bytes:
         else:
             # Layer/Vocoder modes: preserve existing bits, set gate/distortion flags
             data[offset + 27] = (data[offset + 27] & ~0x41) | gate_flag | distortion_flag
-        _write_masked(data, offset + 28, _to_signed_7bit(amp.get("velocity_sense", 0)), 0x7F)
-        _write_masked(data, offset + 29, _to_signed_7bit(amp.get("kbd_track", 0)), 0x7F)
+        _write_masked(data, offset + 28, _to_offset64(amp.get("velocity_sense", 0)), 0x7F)
+        _write_masked(data, offset + 29, _to_offset64(amp.get("kbd_track", 0)), 0x7F)
 
         eg1 = timbre.get("eg1", {})
         data[offset + 30] = _clamp_byte(eg1.get("attack", 0))
@@ -995,7 +1009,7 @@ def build_patch_bytes(record: Dict[str, Any]) -> bytes:
             intensity = int(route.get("intensity", 0))
             # Source (bits 0-3) and Destination (bits 4-7) in same byte
             data[base_pos] = ((dst_idx & 0x0F) << 4) | (src_idx & 0x0F)
-            data[base_pos + 1] = _to_signed_7bit(intensity) & 0x7F
+            data[base_pos + 1] = _to_offset64(intensity) & 0x7F
 
     encode_timbre(record.get("timbre1", {}), 38)
     if voice_mode in ("Split", "Layer"):
