@@ -55,3 +55,4 @@ docs/BOC_*.md
 *.fls
 *.out
 *.toc
+.claude/settings.local.json
