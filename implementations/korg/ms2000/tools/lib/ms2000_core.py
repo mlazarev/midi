@@ -163,6 +163,16 @@ class MS2000Patch:
         return "\n".join(lines)
 
 
+OSC1_WAVES = ["Saw", "Pulse", "Triangle", "Sine", "Vox Wave", "DWGS", "Noise", "Audio In"]
+OSC2_WAVES = ["Saw", "Square", "Triangle"]
+MOD_SELECT = ["Off", "Ring", "Sync", "Ring+Sync"]
+FILTER_TYPES = ["24dB LPF", "12dB LPF", "12dB BPF", "12dB HPF"]
+LFO1_WAVES = ["Saw", "Square", "Triangle", "S/H"]
+LFO2_WAVES = ["Saw", "Square+", "Sine", "S/H"]
+PATCH_SOURCE_NAMES = ["EG1", "EG2", "LFO1", "LFO2", "Velocity", "KeyTrack", "MIDI1", "MIDI2"]
+PATCH_DEST_NAMES = ["PITCH", "OSC2PITCH", "OSC1CTRL1", "OSC1CTRL2", "CUTOFF", "RESONANCE", "LFO1FREQ", "LFO2FREQ"]
+
+
 def _map_choice(options: Sequence[str], index: int, label: str) -> str:
     if 0 <= index < len(options):
         return options[index]
@@ -220,15 +230,16 @@ def _extract_timbre(d: bytes, offset: int) -> Dict[str, Any]:
             "cutoff": d[offset + 20],
             "resonance": d[offset + 21],
             "eg1_intensity": _signed(d[offset + 22] & 0x7F),
-            "kbd_track": _signed(d[offset + 23] & 0x7F),
+            "velocity_sense": _signed(d[offset + 23] & 0x7F),
+            "kbd_track": _signed(d[offset + 24] & 0x7F),
         },
         "amp": {
-            "level": d[offset + 24],
-            "panpot": _signed(d[offset + 25] & 0x7F),
-            "switch": "GATE" if (d[offset + 26] & 0x01) else "EG2",
+            "level": d[offset + 25],
+            "panpot": _signed(d[offset + 26] & 0x7F),
+            "switch": "GATE" if (d[offset + 27] & 0x01) else "EG2",
             "distortion": bool(d[offset + 27] & 0x01),
-            "kbd_track": _signed(d[offset + 28] & 0x7F),
-            "velocity_sense": _signed(d[offset + 29] & 0x7F),
+            "kbd_track": _signed(d[offset + 29] & 0x7F),
+            "velocity_sense": _signed(d[offset + 28] & 0x7F),
         },
         "eg1": {
             "attack": d[offset + 30],
@@ -247,26 +258,28 @@ def _extract_timbre(d: bytes, offset: int) -> Dict[str, Any]:
             "wave_value": lfo1_wave_val,
             "frequency": d[offset + 39],
             "tempo_sync": bool(d[offset + 40] & 0x01),
+            "tempo_value": d[offset + 40],
         },
         "lfo2": {
             "wave": _map_choice(["Saw", "Square+", "Sine", "S/H"], lfo2_wave_val, "LFO2"),
             "wave_value": lfo2_wave_val,
             "frequency": d[offset + 42],
             "tempo_sync": bool(d[offset + 43] & 0x01),
+            "tempo_value": d[offset + 43],
         },
         "patch": {
             f"patch{i+1}": {
                 "source": _map_choice(
                     ["EG1", "EG2", "LFO1", "LFO2", "Velocity", "KeyTrack", "MIDI1", "MIDI2"],
-                    d[offset + 44 + (i * 3)] & 0x07,
+                    d[offset + 44 + (i * 2)] & 0x0F,
                     "SRC",
                 ),
                 "destination": _map_choice(
                     ["PITCH", "OSC2PITCH", "OSC1CTRL1", "OSC1CTRL2", "CUTOFF", "RESONANCE", "LFO1FREQ", "LFO2FREQ"],
-                    d[offset + 45 + (i * 3)] & 0x07,
+                    (d[offset + 44 + (i * 2)] >> 4) & 0x0F,
                     "DEST",
                 ),
-                "intensity": _signed(d[offset + 46 + (i * 3)] & 0x7F),
+                "intensity": _signed(d[offset + 45 + (i * 2)] & 0x7F),
             }
             for i in range(4)
         },
@@ -279,9 +292,11 @@ def extract_full_parameters(patch: MS2000Patch) -> Dict[str, Any]:
     result = {
         "name": patch.name,
         "voice_mode": voice_mode,
+        "timbre_voice": patch.timbre_voice,
         "scale": {
             "key": patch.scale_key,
             "type": patch.scale_type,
+            "split_point": patch.split_point,
         },
         "effects": {
             "delay": {
@@ -289,6 +304,7 @@ def extract_full_parameters(patch: MS2000Patch) -> Dict[str, Any]:
                 "sync": patch.delay_sync,
                 "time": patch.delay_time,
                 "depth": patch.delay_depth,
+                "timebase": patch.delay_timebase,
             },
             "mod_fx": {
                 "type": patch.mod_type,
@@ -312,10 +328,10 @@ def extract_full_parameters(patch: MS2000Patch) -> Dict[str, Any]:
             "range": patch.arp_range,
         },
         "timbre1": _extract_timbre(d, 38),
-        "raw_hex": d[:PATCH_SIZE].hex(),
     }
     if voice_mode in ("Split", "Layer"):
         result["timbre2"] = _extract_timbre(d, 134)
+    result["system"] = {"base_patch": list(d[:PATCH_SIZE])}
     return result
 
 
@@ -771,17 +787,227 @@ def repair_sysex(
     return report
 
 
+def _clamp_byte(value: Any) -> int:
+    return max(0, min(255, int(value)))
+
+
+def _lookup(options: Sequence[str], value: Any, default: int = 0) -> int:
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.startswith("-") and stripped[1:].isdigit():
+            return int(stripped)
+        if stripped.isdigit():
+            return int(stripped)
+        if "(" in stripped and stripped.endswith(")"):
+            inner = stripped[stripped.rfind("(") + 1 : -1]
+            if inner.isdigit():
+                return int(inner)
+        try:
+            return options.index(value)
+        except ValueError:
+            return default
+    return default
+
+
+def _to_signed_7bit(value: Any) -> int:
+    value = int(value)
+    if value < -64 or value > 63:
+        raise ValueError(f"Signed 7-bit value out of range: {value}")
+    return (value + 128) & 0x7F if value < 0 else value & 0x7F
+
+
+def _write_masked(data: bytearray, index: int, value: int, mask: int) -> None:
+    current = data[index]
+    data[index] = (current & ~mask) | (value & mask)
+
+
+def build_patch_bytes(record: Dict[str, Any]) -> bytes:
+    system = record.get("system", {})
+    base_patch = system.get("base_patch")
+    if base_patch:
+        base_bytes = [int(b) & 0xFF for b in base_patch[:PATCH_SIZE]]
+        data = bytearray(base_bytes)
+        if len(data) < PATCH_SIZE:
+            data.extend(b"\x00" * (PATCH_SIZE - len(data)))
+    else:
+        data = bytearray(PATCH_SIZE)
+
+    name = (record.get("name") or "")[:12]
+    if all(ord(ch) < 128 for ch in name):
+        encoded_name = name.encode("ascii")[:12].ljust(12, b" ")
+        data[0:12] = encoded_name
+
+    voice_mode = record.get("voice_mode", "Single")
+    voice_idx = _lookup(MS2000Patch.VOICE_MODES, voice_mode)
+    timbre_voice = int(record.get("timbre_voice", 1)) & 0x03
+    combined_voice = ((timbre_voice & 0x03) << 6) | ((voice_idx & 0x03) << 4)
+    _write_masked(data, 16, combined_voice, 0xF0)
+
+    scale = record.get("scale", {})
+    scale_key = scale.get("key", "C")
+    key_idx = _lookup(MS2000Patch.SCALE_KEYS, scale_key)
+    scale_type = int(scale.get("type", 0)) & 0x0F
+    data[17] = ((key_idx & 0x0F) << 4) | scale_type
+    data[18] = _clamp_byte(scale.get("split_point", 0))
+
+    effects = record.get("effects", {})
+    delay = effects.get("delay", {})
+    delay_sync = bool(delay.get("sync", False))
+    delay_timebase = int(delay.get("timebase", 0)) & 0x0F
+    data[19] = (0x80 if delay_sync else 0x00) | delay_timebase
+    data[20] = _clamp_byte(delay.get("time", 0))
+    data[21] = _clamp_byte(delay.get("depth", 0))
+    data[22] = _lookup(MS2000Patch.DELAY_TYPES, delay.get("type", "StereoDelay"))
+
+    mod_fx = effects.get("mod_fx", {})
+    data[23] = _clamp_byte(mod_fx.get("speed", 0))
+    data[24] = _clamp_byte(mod_fx.get("depth", 0))
+    data[25] = _lookup(MS2000Patch.MOD_TYPES, mod_fx.get("type", "Cho/Flg"))
+
+    eq = effects.get("eq", {})
+    data[26] = _clamp_byte(eq.get("hi_freq", 0))
+    data[27] = _clamp_byte(eq.get("hi_gain", 0))
+    data[28] = _clamp_byte(eq.get("low_freq", 0))
+    data[29] = _clamp_byte(eq.get("low_gain", 0))
+
+    arp = record.get("arpeggiator", {})
+    tempo = int(arp.get("tempo", 120))
+    data[30] = (tempo >> 8) & 0xFF
+    data[31] = tempo & 0xFF
+    byte32 = 0
+    if arp.get("on", False):
+        byte32 |= 0x80
+    if arp.get("latch", False):
+        byte32 |= 0x40
+    byte32 |= (int(arp.get("target", 0)) & 0x03) << 4
+    if arp.get("keysync", False):
+        byte32 |= 0x01
+    data[32] = byte32
+    arp_type_idx = _lookup(MS2000Patch.ARP_TYPES, arp.get("type", "Up"))
+    arp_range = max(1, min(16, int(arp.get("range", 1))))
+    data[33] = ((arp_range - 1) << 4) | (arp_type_idx & 0x0F)
+
+    def encode_timbre(timbre: Dict[str, Any], offset: int) -> None:
+        if not timbre:
+            return
+        voice = timbre.get("voice", {})
+        data[offset + 5] = _clamp_byte(voice.get("portamento_time", 0))
+
+        osc1 = timbre.get("osc1", {})
+        wave1_idx = _lookup(OSC1_WAVES, osc1.get("wave"), osc1.get("wave_value", 0))
+        _write_masked(data, offset + 7, wave1_idx, 0x07)
+        data[offset + 8] = _clamp_byte(osc1.get("ctrl1", 0))
+        data[offset + 9] = _clamp_byte(osc1.get("ctrl2", 0))
+        dwgs_raw = osc1.get("dwgs_wave")
+        if dwgs_raw is not None:
+            dwgs = int(dwgs_raw) - 1
+            if 0 <= dwgs <= 63:
+                _write_masked(data, offset + 10, dwgs, 0x3F)
+
+        osc2 = timbre.get("osc2", {})
+        wave2_idx = _lookup(OSC2_WAVES, osc2.get("wave"), osc2.get("wave_value", 0))
+        mod_idx = _lookup(MOD_SELECT, osc2.get("modulation", "Off"), osc2.get("mod_value", 0))
+        _write_masked(data, offset + 12, wave2_idx, 0x03)
+        _write_masked(data, offset + 12, (mod_idx & 0x03) << 4, 0x30)
+        _write_masked(data, offset + 13, _to_signed_7bit(osc2.get("semitone", 0)), 0x7F)
+        _write_masked(data, offset + 14, _to_signed_7bit(osc2.get("tune", 0)), 0x7F)
+
+        mixer = timbre.get("mixer", {})
+        data[offset + 16] = _clamp_byte(mixer.get("osc1_level", 0))
+        data[offset + 17] = _clamp_byte(mixer.get("osc2_level", 0))
+        data[offset + 18] = _clamp_byte(mixer.get("noise_level", 0))
+
+        filt = timbre.get("filter", {})
+        filter_idx = _lookup(FILTER_TYPES, filt.get("type"), filt.get("type_value", 0))
+        _write_masked(data, offset + 19, filter_idx, 0x03)
+        data[offset + 20] = _clamp_byte(filt.get("cutoff", 0))
+        data[offset + 21] = _clamp_byte(filt.get("resonance", 0))
+        _write_masked(data, offset + 22, _to_signed_7bit(filt.get("eg1_intensity", 0)), 0x7F)
+        _write_masked(data, offset + 23, _to_signed_7bit(filt.get("velocity_sense", 0)), 0x7F)
+        _write_masked(data, offset + 24, _to_signed_7bit(filt.get("kbd_track", 0)), 0x7F)
+
+        amp = timbre.get("amp", {})
+        data[offset + 25] = _clamp_byte(amp.get("level", 0))
+        _write_masked(data, offset + 26, _to_signed_7bit(amp.get("panpot", 0)), 0x7F)
+        # Byte 27: Bit 6 = Amp Switch, Bit 0 = Distortion (both in same byte!)
+        # Bit 6 also acts as "magic bit" for Single/Split modes (required for amp to work)
+        gate_flag = 0x40 if str(amp.get("switch", "EG2")).upper() == "GATE" else 0x00
+        distortion_flag = 0x01 if amp.get("distortion", False) else 0x00
+        if voice_mode in ("Single", "Split"):
+            # Single/Split modes: always set bit 6 (required), plus gate/distortion flags
+            data[offset + 27] = 0x40 | gate_flag | distortion_flag
+        else:
+            # Layer/Vocoder modes: preserve existing bits, set gate/distortion flags
+            data[offset + 27] = (data[offset + 27] & ~0x41) | gate_flag | distortion_flag
+        _write_masked(data, offset + 28, _to_signed_7bit(amp.get("velocity_sense", 0)), 0x7F)
+        _write_masked(data, offset + 29, _to_signed_7bit(amp.get("kbd_track", 0)), 0x7F)
+
+        eg1 = timbre.get("eg1", {})
+        data[offset + 30] = _clamp_byte(eg1.get("attack", 0))
+        data[offset + 31] = _clamp_byte(eg1.get("decay", 0))
+        data[offset + 32] = _clamp_byte(eg1.get("sustain", 0))
+        data[offset + 33] = _clamp_byte(eg1.get("release", 0))
+
+        eg2 = timbre.get("eg2", {})
+        data[offset + 34] = _clamp_byte(eg2.get("attack", 0))
+        data[offset + 35] = _clamp_byte(eg2.get("decay", 0))
+        data[offset + 36] = _clamp_byte(eg2.get("sustain", 0))
+        data[offset + 37] = _clamp_byte(eg2.get("release", 0))
+
+        lfo1 = timbre.get("lfo1", {})
+        lfo1_idx = _lookup(LFO1_WAVES, lfo1.get("wave"), lfo1.get("wave_value", 0))
+        _write_masked(data, offset + 38, lfo1_idx, 0x03)
+        data[offset + 39] = _clamp_byte(lfo1.get("frequency", 0))
+        tempo1_raw = lfo1.get("tempo_value")
+        if tempo1_raw is None:
+            tempo_byte = 1 if lfo1.get("tempo_sync", False) else 0
+        else:
+            tempo_byte = int(tempo1_raw) & 0xFF
+        if lfo1.get("tempo_sync", False):
+            tempo_byte |= 0x01
+        else:
+            tempo_byte &= 0xFE
+        data[offset + 40] = tempo_byte & 0xFF
+
+        lfo2 = timbre.get("lfo2", {})
+        lfo2_idx = _lookup(LFO2_WAVES, lfo2.get("wave"), lfo2.get("wave_value", 0))
+        _write_masked(data, offset + 41, lfo2_idx, 0x03)
+        data[offset + 42] = _clamp_byte(lfo2.get("frequency", 0))
+        tempo2_raw = lfo2.get("tempo_value")
+        if tempo2_raw is None:
+            tempo_byte = 1 if lfo2.get("tempo_sync", False) else 0
+        else:
+            tempo_byte = int(tempo2_raw) & 0xFF
+        if lfo2.get("tempo_sync", False):
+            tempo_byte |= 0x01
+        else:
+            tempo_byte &= 0xFE
+        data[offset + 43] = tempo_byte & 0xFF
+
+        patch_matrix = timbre.get("patch", {})
+        for route_idx in range(1, 5):
+            route = patch_matrix.get(f"patch{route_idx}", {})
+            base_pos = offset + 44 + (route_idx - 1) * 2
+            src_idx = _lookup(PATCH_SOURCE_NAMES, route.get("source", "EG1"))
+            dst_idx = _lookup(PATCH_DEST_NAMES, route.get("destination", "PITCH"))
+            intensity = int(route.get("intensity", 0))
+            # Source (bits 0-3) and Destination (bits 4-7) in same byte
+            data[base_pos] = ((dst_idx & 0x0F) << 4) | (src_idx & 0x0F)
+            data[base_pos + 1] = _to_signed_7bit(intensity) & 0x7F
+
+    encode_timbre(record.get("timbre1", {}), 38)
+    if voice_mode in ("Split", "Layer"):
+        encode_timbre(record.get("timbre2", {}), 134)
+
+    return bytes(data)
+
+
 def patches_from_json(records: Sequence[Dict[str, Any]]) -> List[MS2000Patch]:
     patches: List[MS2000Patch] = []
-    for idx, record in enumerate(records, start=1):
-        raw_hex = record.get("raw_hex")
-        if not raw_hex:
-            raise ValueError(f"Record {idx} missing 'raw_hex' field required for encoding")
-        raw_bytes = bytes.fromhex(raw_hex)
-        if len(raw_bytes) != PATCH_SIZE:
-            raise ValueError(
-                f"Record {idx} raw_hex length {len(raw_bytes)} != {PATCH_SIZE} bytes"
-            )
+    for record in records:
+        raw_bytes = build_patch_bytes(record)
         patches.append(MS2000Patch(raw_bytes))
     return patches
 
@@ -795,13 +1021,8 @@ def encode_bank_from_json(
     if not 0 <= midi_channel <= 0x0F:
         raise ValueError("MIDI channel must be in range 0..15")
     header = bytes([0xF0, 0x42, 0x30 | midi_channel, 0x58, function])
-    chunks = [bytes.fromhex(rec["raw_hex"]) for rec in records]
-    for idx, chunk in enumerate(chunks, start=1):
-        if len(chunk) != PATCH_SIZE:
-            raise ValueError(f"Record {idx} raw_hex does not represent {PATCH_SIZE} bytes")
-    decoded_stream = b"".join(chunks)
-    if len(decoded_stream) % PATCH_SIZE != 0:
-        raise ValueError("Decoded stream size is not a multiple of patch size")
+    decoded_chunks = [build_patch_bytes(rec) for rec in records]
+    decoded_stream = b"".join(decoded_chunks)
     encoded_stream = encode_korg_7bit(decoded_stream)
     return header + encoded_stream + bytes([0xF7])
 
