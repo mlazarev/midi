@@ -1,11 +1,11 @@
 # Project Status & Roadmap
 
-Version: v1.1.0
+Version: v1.2.0
 
 ## ✅ Completed
 
 ### MS2000 Tools & Banks
-- [x] Robust SysEx encoder/decoder (Korg 7→8 bit, variant v2), hardware‑verified
+- [x] Robust SysEx encoder/decoder (Korg 7→8 bit, variant v2), hardware‑verified; structured JSON now feeds the encoder end-to-end
 - [x] Factory bank included: `patches/factory/FactoryBanks.syx`
 - [x] Boards of Canada style bank:
   - [x] `patches/BoardsOfCanada/BOCSunday.syx` (16 handcrafted + 112 generated)
@@ -29,7 +29,7 @@ Version: v1.1.0
 
 ## 🚧 In Progress
 
-- Decode convenience: enrich `ms2000_cli.py decode` output with motion/vocoder bytes
+- Decode convenience: surface motion/vocoder bytes in JSON (currently preserved but opaque)
 - Analyzer: auto‑detect v1/v2 in decoder for complete compatibility
 
 ## 📋 Planned Features
@@ -51,7 +51,7 @@ Version: v1.1.0
 
 ## 🐛 Known Notes
 
-- Decoder exposes raw 254 bytes; parsed fields currently focus on header/FX/arp. Full timbre decode is planned.
+- Decoder now maps core synth parameters (global FX, timbres, modulation); motion sequencer and vocoder bytes remain opaque but are preserved for round-trips.
 - Sending requires `mido` + `python-rtmidi` if using `send_to_ms2000.py`.
 
 ## 📊 Project Metrics (informational)

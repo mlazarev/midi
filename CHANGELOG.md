@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+# v1.2.0 (2025-10-24)
+
+Highlights
+- Encoder rebuild no longer relies on `raw_hex`; modulation routing offsets fixed and new fields (`timbre_voice`, delay timebase, LFO tempo values) round out structured JSON.
+- Factory JSON refreshed (`factory_banks.json`, `factory_evolutions.json`) with canonical schema, index/slot metadata, and level/pan safeguards for every patch.
+- Documentation tightened around the decode/encode workflow and the CLI now carries motion/vocoder regions forward automatically.
+
+Docs
+- Rewrote decoder guide to reflect the raw-free pipeline and new JSON sample.
+
 # v1.1.0 (2025-10-21)
 
 Highlights
