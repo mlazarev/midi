@@ -319,10 +319,6 @@ patch_data[31] = tempo & 0xFF         # LSB
 - [MIDI-OX](http://www.midiox.com/) - Windows
 - [SendMIDI](https://github.com/gbevin/SendMIDI) - Command-line MIDI tools
 
-### Further Reading
-- See [../../docs/general/LEARNING_SUMMARY.md](../../docs/general/LEARNING_SUMMARY.md) for MIDI fundamentals
-- See [../../docs/general/QUICK_REFERENCE.md](../../docs/general/QUICK_REFERENCE.md) for quick lookup
-
 ## Contributing
 
 Contributions welcome! Possible enhancements:
