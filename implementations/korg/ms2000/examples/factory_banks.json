@@ -1,5 +1,7 @@
 [
   {
+    "index": 1,
+    "slot": "A01",
     "name": "Stab Saw",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -387,6 +389,8 @@
     }
   },
   {
+    "index": 2,
+    "slot": "A02",
     "name": "Synth Lana",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -774,6 +778,8 @@
     }
   },
   {
+    "index": 3,
+    "slot": "A03",
     "name": "Evolution",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -1161,6 +1167,8 @@
     }
   },
   {
+    "index": 4,
+    "slot": "A04",
     "name": "Boost Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -1548,6 +1556,8 @@
     }
   },
   {
+    "index": 5,
+    "slot": "A05",
     "name": "Dirty Sync",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -1935,6 +1945,8 @@
     }
   },
   {
+    "index": 6,
+    "slot": "A06",
     "name": "Zoop Mania",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -2412,6 +2424,8 @@
     }
   },
   {
+    "index": 7,
+    "slot": "A07",
     "name": "Ice Field",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -2799,6 +2813,8 @@
     }
   },
   {
+    "index": 8,
+    "slot": "A08",
     "name": "Lounge Organ",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -3186,6 +3202,8 @@
     }
   },
   {
+    "index": 9,
+    "slot": "A09",
     "name": "MG Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -3573,6 +3591,8 @@
     }
   },
   {
+    "index": 10,
+    "slot": "A10",
     "name": "GatesOfHell",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -3960,6 +3980,8 @@
     }
   },
   {
+    "index": 11,
+    "slot": "A11",
     "name": "PWM Strings",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -4347,6 +4369,8 @@
     }
   },
   {
+    "index": 12,
+    "slot": "A12",
     "name": "Turn Wheel",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -4734,6 +4758,8 @@
     }
   },
   {
+    "index": 13,
+    "slot": "A13",
     "name": "Synth Tp",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -5121,6 +5147,8 @@
     }
   },
   {
+    "index": 14,
+    "slot": "A14",
     "name": "DWGS WaveSeq",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -5508,6 +5536,8 @@
     }
   },
   {
+    "index": 15,
+    "slot": "A15",
     "name": "Drive Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -5895,6 +5925,8 @@
     }
   },
   {
+    "index": 16,
+    "slot": "A16",
     "name": "Surrounded",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -6282,6 +6314,8 @@
     }
   },
   {
+    "index": 17,
+    "slot": "B01",
     "name": "Lazy Pitch",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -6669,6 +6703,8 @@
     }
   },
   {
+    "index": 18,
+    "slot": "B02",
     "name": "Stairs Pad",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -7146,6 +7182,8 @@
     }
   },
   {
+    "index": 19,
+    "slot": "B03",
     "name": "Silk Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -7533,6 +7571,8 @@
     }
   },
   {
+    "index": 20,
+    "slot": "B04",
     "name": "Zap Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -7920,6 +7960,8 @@
     }
   },
   {
+    "index": 21,
+    "slot": "B05",
     "name": "Uni Synth",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -8397,6 +8439,8 @@
     }
   },
   {
+    "index": 22,
+    "slot": "B06",
     "name": "PsycheTrance",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -8874,6 +8918,8 @@
     }
   },
   {
+    "index": 23,
+    "slot": "B07",
     "name": "Deep Bell",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -9261,6 +9307,8 @@
     }
   },
   {
+    "index": 24,
+    "slot": "B08",
     "name": "Synth Clav",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -9648,6 +9696,8 @@
     }
   },
   {
+    "index": 25,
+    "slot": "B09",
     "name": "Line Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -10035,6 +10085,8 @@
     }
   },
   {
+    "index": 26,
+    "slot": "B10",
     "name": "SearchEngine",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -10512,6 +10564,8 @@
     }
   },
   {
+    "index": 27,
+    "slot": "B11",
     "name": "Voice /A/",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -10899,6 +10953,8 @@
     }
   },
   {
+    "index": 28,
+    "slot": "B12",
     "name": "Far Horizon",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -11376,6 +11432,8 @@
     }
   },
   {
+    "index": 29,
+    "slot": "B13",
     "name": "Glass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -11763,6 +11821,8 @@
     }
   },
   {
+    "index": 30,
+    "slot": "B14",
     "name": "Random",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -12150,6 +12210,8 @@
     }
   },
   {
+    "index": 31,
+    "slot": "B15",
     "name": "Jami Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -12537,6 +12599,8 @@
     }
   },
   {
+    "index": 32,
+    "slot": "B16",
     "name": "Loomy",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -12924,6 +12988,8 @@
     }
   },
   {
+    "index": 33,
+    "slot": "C01",
     "name": "Poly Line",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -13311,6 +13377,8 @@
     }
   },
   {
+    "index": 34,
+    "slot": "C02",
     "name": "Krazy Arpy 1",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -13698,6 +13766,8 @@
     }
   },
   {
+    "index": 35,
+    "slot": "C03",
     "name": "Mod3&4 Squad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -14085,6 +14155,8 @@
     }
   },
   {
+    "index": 36,
+    "slot": "C04",
     "name": "What D' Time",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -14472,6 +14544,8 @@
     }
   },
   {
+    "index": 37,
+    "slot": "C05",
     "name": "Healing",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -14859,6 +14933,8 @@
     }
   },
   {
+    "index": 38,
+    "slot": "C06",
     "name": "Auto Disco",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -15336,6 +15412,8 @@
     }
   },
   {
+    "index": 39,
+    "slot": "C07",
     "name": "Candy Box",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -15723,6 +15801,8 @@
     }
   },
   {
+    "index": 40,
+    "slot": "C08",
     "name": "Vintage EP",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -16110,6 +16190,8 @@
     }
   },
   {
+    "index": 41,
+    "slot": "C09",
     "name": "Mini Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -16497,6 +16579,8 @@
     }
   },
   {
+    "index": 42,
+    "slot": "C10",
     "name": "Tap Lead",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -16974,6 +17058,8 @@
     }
   },
   {
+    "index": 43,
+    "slot": "C11",
     "name": "Royal Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -17361,6 +17447,8 @@
     }
   },
   {
+    "index": 44,
+    "slot": "C12",
     "name": "Freq Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -17748,6 +17836,8 @@
     }
   },
   {
+    "index": 45,
+    "slot": "C13",
     "name": "Solemn Brass",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -18225,6 +18315,8 @@
     }
   },
   {
+    "index": 46,
+    "slot": "C14",
     "name": "IZDISA-WS",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -18612,6 +18704,8 @@
     }
   },
   {
+    "index": 47,
+    "slot": "C15",
     "name": "House Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -18999,6 +19093,8 @@
     }
   },
   {
+    "index": 48,
+    "slot": "C16",
     "name": "Invaders",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -19386,6 +19482,8 @@
     }
   },
   {
+    "index": 49,
+    "slot": "D01",
     "name": "Ana Fuzz",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -19773,6 +19871,8 @@
     }
   },
   {
+    "index": 50,
+    "slot": "D02",
     "name": "Water Edge",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -20250,6 +20350,8 @@
     }
   },
   {
+    "index": 51,
+    "slot": "D03",
     "name": "Reactor Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -20637,6 +20739,8 @@
     }
   },
   {
+    "index": 52,
+    "slot": "D04",
     "name": "MS-101 Sqr",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -21024,6 +21128,8 @@
     }
   },
   {
+    "index": 53,
+    "slot": "D05",
     "name": "Edge Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -21411,6 +21517,8 @@
     }
   },
   {
+    "index": 54,
+    "slot": "D06",
     "name": "Goa Trax",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -21888,6 +21996,8 @@
     }
   },
   {
+    "index": 55,
+    "slot": "D07",
     "name": "Retro BD/SD",
     "voice_mode": "Split",
     "timbre_voice": 1,
@@ -22365,6 +22475,8 @@
     }
   },
   {
+    "index": 56,
+    "slot": "D08",
     "name": "Wet Reed",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -22752,6 +22864,8 @@
     }
   },
   {
+    "index": 57,
+    "slot": "D09",
     "name": "Fat Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -23139,6 +23253,8 @@
     }
   },
   {
+    "index": 58,
+    "slot": "D10",
     "name": "Flashlight",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -23526,6 +23642,8 @@
     }
   },
   {
+    "index": 59,
+    "slot": "D11",
     "name": "Stream Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -23913,6 +24031,8 @@
     }
   },
   {
+    "index": 60,
+    "slot": "D12",
     "name": "EP Fusion Ld",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -24300,6 +24420,8 @@
     }
   },
   {
+    "index": 61,
+    "slot": "D13",
     "name": "TremoloSynth",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -24687,6 +24809,8 @@
     }
   },
   {
+    "index": 62,
+    "slot": "D14",
     "name": "Motion Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -25074,6 +25198,8 @@
     }
   },
   {
+    "index": 63,
+    "slot": "D15",
     "name": "Banana Bass",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -25551,6 +25677,8 @@
     }
   },
   {
+    "index": 64,
+    "slot": "D16",
     "name": "Bad Dream",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -25938,6 +26066,8 @@
     }
   },
   {
+    "index": 65,
+    "slot": "E01",
     "name": "Century Stab",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -26325,6 +26455,8 @@
     }
   },
   {
+    "index": 66,
+    "slot": "E02",
     "name": "Simple Arpg",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -26712,6 +26844,8 @@
     }
   },
   {
+    "index": 67,
+    "slot": "E03",
     "name": "Tin Memoreez",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -27099,6 +27233,8 @@
     }
   },
   {
+    "index": 68,
+    "slot": "E04",
     "name": "Organ Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -27486,6 +27622,8 @@
     }
   },
   {
+    "index": 69,
+    "slot": "E05",
     "name": "High Voltage",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -27963,6 +28101,8 @@
     }
   },
   {
+    "index": 70,
+    "slot": "E06",
     "name": "Trip Planet",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -28440,6 +28580,8 @@
     }
   },
   {
+    "index": 71,
+    "slot": "E07",
     "name": "Dry Plant",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -28827,6 +28969,8 @@
     }
   },
   {
+    "index": 72,
+    "slot": "E08",
     "name": "Reed Piano",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -29214,6 +29358,8 @@
     }
   },
   {
+    "index": 73,
+    "slot": "E09",
     "name": "Magnum Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -29601,6 +29747,8 @@
     }
   },
   {
+    "index": 74,
+    "slot": "E10",
     "name": "Mad Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -29988,6 +30136,8 @@
     }
   },
   {
+    "index": 75,
+    "slot": "E11",
     "name": "Belly",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -30375,6 +30525,8 @@
     }
   },
   {
+    "index": 76,
+    "slot": "E12",
     "name": "BackInTheDay",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -30762,6 +30914,8 @@
     }
   },
   {
+    "index": 77,
+    "slot": "E13",
     "name": "Synth Brass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -31149,6 +31303,8 @@
     }
   },
   {
+    "index": 78,
+    "slot": "E14",
     "name": "ElectroShock",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -31626,6 +31782,8 @@
     }
   },
   {
+    "index": 79,
+    "slot": "E15",
     "name": "Bakin' Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -32013,6 +32171,8 @@
     }
   },
   {
+    "index": 80,
+    "slot": "E16",
     "name": "Telephone",
     "voice_mode": "Split",
     "timbre_voice": 1,
@@ -32490,6 +32650,8 @@
     }
   },
   {
+    "index": 81,
+    "slot": "F01",
     "name": "Golden Synth",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -32877,6 +33039,8 @@
     }
   },
   {
+    "index": 82,
+    "slot": "F02",
     "name": "Blue&White",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -33354,6 +33518,8 @@
     }
   },
   {
+    "index": 83,
+    "slot": "F03",
     "name": "Pan Tran",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -33741,6 +33907,8 @@
     }
   },
   {
+    "index": 84,
+    "slot": "F04",
     "name": "Warp Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -34128,6 +34296,8 @@
     }
   },
   {
+    "index": 85,
+    "slot": "F05",
     "name": "Killa Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -34515,6 +34685,8 @@
     }
   },
   {
+    "index": 86,
+    "slot": "F06",
     "name": "Tribe'n Beat",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -34992,6 +35164,8 @@
     }
   },
   {
+    "index": 87,
+    "slot": "F07",
     "name": "Bound Ball",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -35379,6 +35553,8 @@
     }
   },
   {
+    "index": 88,
+    "slot": "F08",
     "name": "Cutting Arpg",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -35766,6 +35942,8 @@
     }
   },
   {
+    "index": 89,
+    "slot": "F09",
     "name": "Bass Machine",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -36153,6 +36331,8 @@
     }
   },
   {
+    "index": 90,
+    "slot": "F10",
     "name": "Trip 2 Ibiza",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -36540,6 +36720,8 @@
     }
   },
   {
+    "index": 91,
+    "slot": "F11",
     "name": "Ana Strings",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -36927,6 +37109,8 @@
     }
   },
   {
+    "index": 92,
+    "slot": "F12",
     "name": "Past Mind",
     "voice_mode": "Split",
     "timbre_voice": 0,
@@ -37404,6 +37588,8 @@
     }
   },
   {
+    "index": 93,
+    "slot": "F13",
     "name": "Future Vibe",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -37791,6 +37977,8 @@
     }
   },
   {
+    "index": 94,
+    "slot": "F14",
     "name": "Euro Synth\ufffd",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -38268,6 +38456,8 @@
     }
   },
   {
+    "index": 95,
+    "slot": "F15",
     "name": "Digy Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -38655,6 +38845,8 @@
     }
   },
   {
+    "index": 96,
+    "slot": "F16",
     "name": "Thunder",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -39042,6 +39234,8 @@
     }
   },
   {
+    "index": 97,
+    "slot": "G01",
     "name": "Square Comp",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -39429,6 +39623,8 @@
     }
   },
   {
+    "index": 98,
+    "slot": "G02",
     "name": "Krazy Arpy 2",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -39816,6 +40012,8 @@
     }
   },
   {
+    "index": 99,
+    "slot": "G03",
     "name": "Sweep Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -40203,6 +40401,8 @@
     }
   },
   {
+    "index": 100,
+    "slot": "G04",
     "name": "Sub Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -40590,6 +40790,8 @@
     }
   },
   {
+    "index": 101,
+    "slot": "G05",
     "name": "Phenomenon",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -40977,6 +41179,8 @@
     }
   },
   {
+    "index": 102,
+    "slot": "G06",
     "name": "Ready 2 Air",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -41454,6 +41658,8 @@
     }
   },
   {
+    "index": 103,
+    "slot": "G07",
     "name": "X-Mod Perc",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -41841,6 +42047,8 @@
     }
   },
   {
+    "index": 104,
+    "slot": "G08",
     "name": "BritishOrgan",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -42228,6 +42436,8 @@
     }
   },
   {
+    "index": 105,
+    "slot": "G09",
     "name": "80's Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -42615,6 +42825,8 @@
     }
   },
   {
+    "index": 106,
+    "slot": "G10",
     "name": "Min.Deal",
     "voice_mode": "Layer",
     "timbre_voice": 1,
@@ -43092,6 +43304,8 @@
     }
   },
   {
+    "index": 107,
+    "slot": "G11",
     "name": "Astral Vox",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -43479,6 +43693,8 @@
     }
   },
   {
+    "index": 108,
+    "slot": "G12",
     "name": "Rez Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -43866,6 +44082,8 @@
     }
   },
   {
+    "index": 109,
+    "slot": "G13",
     "name": "Soft Brass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -44253,6 +44471,8 @@
     }
   },
   {
+    "index": 110,
+    "slot": "G14",
     "name": "CPU Talk",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -44640,6 +44860,8 @@
     }
   },
   {
+    "index": 111,
+    "slot": "G15",
     "name": "Phunk Bass",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -45027,6 +45249,8 @@
     }
   },
   {
+    "index": 112,
+    "slot": "G16",
     "name": "Jet Set 2000",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -45414,6 +45638,8 @@
     }
   },
   {
+    "index": 113,
+    "slot": "H01",
     "name": "Poly400",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -45801,6 +46027,8 @@
     }
   },
   {
+    "index": 114,
+    "slot": "H02",
     "name": "Diginator",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -46278,6 +46506,8 @@
     }
   },
   {
+    "index": 115,
+    "slot": "H03",
     "name": "Light Pad",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -46665,6 +46895,8 @@
     }
   },
   {
+    "index": 116,
+    "slot": "H04",
     "name": "Bass&5thLead",
     "voice_mode": "Split",
     "timbre_voice": 0,
@@ -47142,6 +47374,8 @@
     }
   },
   {
+    "index": 117,
+    "slot": "H05",
     "name": "Woody's Lead",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -47529,6 +47763,8 @@
     }
   },
   {
+    "index": 118,
+    "slot": "H06",
     "name": "Filter Muzik",
     "voice_mode": "Layer",
     "timbre_voice": 0,
@@ -48006,6 +48242,8 @@
     }
   },
   {
+    "index": 119,
+    "slot": "H07",
     "name": "TimeZone SFX",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -48393,6 +48631,8 @@
     }
   },
   {
+    "index": 120,
+    "slot": "H08",
     "name": "Pulse Comp",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -48780,6 +49020,8 @@
     }
   },
   {
+    "index": 121,
+    "slot": "H09",
     "name": "Vocoder Ens",
     "voice_mode": "Vocoder",
     "timbre_voice": 1,
@@ -49167,6 +49409,8 @@
     }
   },
   {
+    "index": 122,
+    "slot": "H10",
     "name": "Vocoder Cho",
     "voice_mode": "Vocoder",
     "timbre_voice": 1,
@@ -49554,6 +49798,8 @@
     }
   },
   {
+    "index": 123,
+    "slot": "H11",
     "name": "Vocoder Wah",
     "voice_mode": "Vocoder",
     "timbre_voice": 1,
@@ -49941,6 +50187,8 @@
     }
   },
   {
+    "index": 124,
+    "slot": "H12",
     "name": "VocoderPulse",
     "voice_mode": "Vocoder",
     "timbre_voice": 1,
@@ -50328,6 +50576,8 @@
     }
   },
   {
+    "index": 125,
+    "slot": "H13",
     "name": "",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -50715,6 +50965,8 @@
     }
   },
   {
+    "index": 126,
+    "slot": "H14",
     "name": "",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -51102,6 +51354,8 @@
     }
   },
   {
+    "index": 127,
+    "slot": "H15",
     "name": "",
     "voice_mode": "Single",
     "timbre_voice": 1,
@@ -51489,6 +51743,8 @@
     }
   },
   {
+    "index": 128,
+    "slot": "H16",
     "name": "",
     "voice_mode": "Single",
     "timbre_voice": 1,
