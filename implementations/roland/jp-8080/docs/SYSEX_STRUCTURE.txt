@@ -1,0 +1,280 @@
+Roland JP-8080 SysEx Structure
+===============================
+
+This document describes the MIDI System Exclusive (SysEx) message format
+for the Roland JP-8080 synthesizer.
+
+## Overview
+
+The JP-8080 uses Roland's standard DT1 (Data Set 1) and RQ1 (Data Request 1)
+SysEx format for patch and system parameter communication.
+
+## SysEx Message Format
+
+### Data Set 1 (DT1) - Send Data to JP-8080
+
+```
+F0 41 <dev> 00 06 12 <addr> <addr> <addr> <addr> <data...> <sum> F7
+
+Byte    Description                 Values
+----    -----------                 ------
+F0      SysEx Start                 Fixed: F0
+41      Manufacturer ID (Roland)    Fixed: 41
+<dev>   Device ID                   00-1F (default: 10)
+00 06   Model ID (JP-8080)          Fixed: 00 06
+12      Command (DT1)               Fixed: 12
+<addr>  Address (MSB)               4 bytes, 7-bit each
+<addr>  Address                     Address of parameter
+<addr>  Address                     (see address map below)
+<addr>  Address (LSB)
+<data>  Data bytes                  1-256 bytes of data
+<sum>   Checksum                    (see checksum calculation)
+F7      SysEx End                   Fixed: F7
+```
+
+### Data Request 1 (RQ1) - Request Data from JP-8080
+
+```
+F0 41 <dev> 00 06 11 <addr> <addr> <addr> <addr> <size> <size> <size> <size> <sum> F7
+
+11      Command (RQ1)               Fixed: 11
+<size>  Size (4 bytes)              Number of bytes to request
+```
+
+## Checksum Calculation
+
+The checksum is calculated as follows:
+
+```
+1. Sum all address bytes and data bytes
+2. Take the result modulo 128
+3. Subtract from 128
+4. Take the result AND 0x7F
+```
+
+Example in Python:
+```python
+def calculate_checksum(data: bytes) -> int:
+    total = sum(data) % 128
+    return (128 - total) & 0x7F
+```
+
+## Address Map
+
+### Main Areas
+
+| Start Address | Description                    | Section |
+|---------------|--------------------------------|---------|
+| 00 00 00 00   | System Area                    | 4-1     |
+| 01 00 00 00   | Performance Temporary Area     | 4-2     |
+| 02 00 00 00   | User Patch (U:A11 - U:B88)     | 4-4     |
+| 03 00 00 00   | User Performance (U:11 - U:88) | 4-5     |
+| 09 00 00 00   | Motion Control Data            | 4-6     |
+
+### User Patch Addresses
+
+Each patch is 248 bytes (0x178 hex). Patches are numbered from A11 to B88 (128 total).
+
+| Patch  | Address      | Description      |
+|--------|--------------|------------------|
+| U:A11  | 02 00 00 00  | User Patch 1     |
+| U:A12  | 02 00 02 00  | User Patch 2     |
+| U:A13  | 02 00 04 00  | User Patch 3     |
+| ...    | ...          | ...              |
+| U:A88  | 02 00 7E 00  | User Patch 64    |
+| U:B11  | 02 01 00 00  | User Patch 65    |
+| U:B12  | 02 01 02 00  | User Patch 66    |
+| ...    | ...          | ...              |
+| U:B88  | 02 01 7E 00  | User Patch 128   |
+
+Note: Address increments by 0x200 (512 decimal) for each patch.
+
+## Patch Structure (248 bytes)
+
+### Offset Map
+
+| Offset | Bytes | Parameter                    | Range           |
+|--------|-------|------------------------------|-----------------|
+| 0x00   | 16    | Patch Name                   | ASCII (20-7D)   |
+| 0x10   | 1     | LFO1 Waveform                | 0-3             |
+| 0x11   | 1     | LFO1 Rate                    | 0-127           |
+| 0x12   | 1     | LFO1 Fade                    | 0-127           |
+| 0x13   | 1     | LFO2 Rate                    | 0-127           |
+| 0x14   | 1     | LFO2 Depth Select            | 0-2             |
+| 0x15   | 1     | Ring Modulator Switch        | 0-1             |
+| 0x16   | 1     | Cross Modulation Depth       | 0-127           |
+| 0x17   | 1     | Oscillator Balance           | 0-127 (±64)     |
+| 0x18   | 1     | LFO1 & Env Destination       | 0-2             |
+| 0x19   | 1     | OSC LFO1 Depth               | 0-127 (±64)     |
+| 0x1A   | 1     | Pitch LFO2 Depth             | 0-127 (±64)     |
+| 0x1B   | 1     | Pitch Envelope Depth         | 0-127 (±64)     |
+| 0x1C   | 1     | Pitch Envelope Attack        | 0-127           |
+| 0x1D   | 1     | Pitch Envelope Decay         | 0-127           |
+| 0x1E   | 1     | OSC1 Waveform                | 0-6             |
+| 0x1F   | 1     | OSC1 Control1                | 0-127           |
+| 0x20   | 1     | OSC1 Control2                | 0-127           |
+| 0x21   | 1     | OSC2 Waveform                | 0-3             |
+| 0x22   | 1     | OSC2 Sync Switch             | 0-1             |
+| 0x23   | 1     | OSC2 Range                   | 0-50 (±25)      |
+| 0x24   | 1     | OSC2 Fine/Wide               | 0-100 (±50)     |
+| 0x25   | 1     | OSC2 Control1                | 0-127           |
+| 0x26   | 1     | OSC2 Control2                | 0-127           |
+| 0x27   | 1     | Filter Type                  | 0-2             |
+| 0x28   | 1     | Cutoff Slope                 | 0-1             |
+| 0x29   | 1     | Cutoff Frequency             | 0-127           |
+| 0x2A   | 1     | Resonance                    | 0-127           |
+| 0x2B   | 1     | Cutoff Key Follow            | 0-127 (±64)     |
+| 0x2C   | 1     | Filter LFO1 Depth            | 0-127 (±64)     |
+| 0x2D   | 1     | Filter LFO2 Depth            | 0-127 (±64)     |
+| 0x2E   | 1     | Filter Envelope Depth        | 0-127 (±64)     |
+| 0x2F   | 1     | Filter Env Attack            | 0-127           |
+| 0x30   | 1     | Filter Env Decay             | 0-127           |
+| 0x31   | 1     | Filter Env Sustain           | 0-127           |
+| 0x32   | 1     | Filter Env Release           | 0-127           |
+| 0x33   | 1     | Amp Level                    | 0-127           |
+| 0x34   | 1     | Amp LFO1 Depth               | 0-127 (±64)     |
+| 0x35   | 1     | Amp LFO2 Depth               | 0-127 (±64)     |
+| 0x36   | 1     | Amp Env Attack               | 0-127           |
+| 0x37   | 1     | Amp Env Decay                | 0-127           |
+| 0x38   | 1     | Amp Env Sustain              | 0-127           |
+| 0x39   | 1     | Amp Env Release              | 0-127           |
+| 0x3A   | 1     | Auto Pan/Manual Pan Switch   | 0-2             |
+| 0x3B   | 1     | Tone Control Bass            | 0-127 (±64)     |
+| 0x3C   | 1     | Tone Control Treble          | 0-127 (±64)     |
+| 0x3D   | 1     | Multi Effects Type           | 0-12            |
+| 0x3E   | 1     | Multi Effects Level          | 0-127           |
+| 0x3F   | 1     | Delay Type                   | 0-4             |
+| 0x40   | 1     | Delay Time                   | 0-127           |
+| 0x41   | 1     | Delay Feedback               | 0-127           |
+| 0x42   | 1     | Delay Level                  | 0-127           |
+| 0x43   | 1     | Bend Range Up                | 0-24            |
+| 0x44   | 1     | Bend Range Down              | 0-24            |
+| 0x45   | 1     | Portamento Switch            | 0-1             |
+| 0x46   | 1     | Portamento Time              | 0-127           |
+| 0x47   | 1     | Mono Switch                  | 0-1             |
+| 0x48   | 1     | Legato Switch                | 0-1             |
+| 0x49   | 1     | Oscillator Shift             | 0-4 (±2 oct)    |
+| 0x4A   | 2     | Control: LFO1 Rate           | 0-254 (±127)    |
+| ...    | ...   | ... (Control/Velocity params)| ...             |
+| 0x173  | 1     | Unison Switch                | 0-1             |
+| 0x174  | 1     | Unison Detune                | 0-50            |
+| 0x175  | 1     | Patch Gain                   | 0-2             |
+| 0x176  | 1     | External Trigger Switch      | 0-1             |
+| 0x177  | 1     | External Trigger Destination | 0-2             |
+
+### Parameter Value Encoding
+
+#### Offset-64 Values (Signed)
+Parameters marked with (±64) use offset-64 encoding:
+- 0x00 (0) = -64
+- 0x40 (64) = 0 (center)
+- 0x7F (127) = +63
+
+#### 14-bit Values
+Some parameters (marked with #) use 14-bit encoding split into two bytes:
+- MSB contains bit 7 of the value
+- LSB contains bits 0-6 of the value
+
+Example: A value of 200 (0xC8)
+- MSB = 0x01 (bit 7 is 1)
+- LSB = 0x48 (bits 0-6)
+
+### Waveform Types
+
+#### LFO1 Waveforms (0x10)
+- 0 = Triangle
+- 1 = Saw
+- 2 = Square
+- 3 = Sample & Hold
+
+#### OSC1 Waveforms (0x1E)
+- 0 = Super Saw
+- 1 = TWM (Time Width Modulation)
+- 2 = Feedback
+- 3 = Noise
+- 4 = Pulse
+- 5 = Saw
+- 6 = Triangle
+
+#### OSC2 Waveforms (0x21)
+- 0 = Pulse
+- 1 = Triangle
+- 2 = Saw
+- 3 = Noise
+
+#### Filter Types (0x27)
+- 0 = HPF (High-Pass Filter)
+- 1 = BPF (Band-Pass Filter)
+- 2 = LPF (Low-Pass Filter)
+
+#### Multi Effects Types (0x3D)
+- 0 = Super Chorus Slow
+- 1 = Super Chorus Fast
+- 2 = Chorus 1
+- 3 = Chorus 2
+- 4 = Flanger
+- 5 = Short Delay
+- 6 = Short Delay FB
+- 7 = Short Delay Rev
+- 8 = Overdrive
+- 9 = Distortion 1
+- 10 = Distortion 2
+- 11 = Distortion 3
+- 12 = Distortion 4
+
+#### Delay Types (0x3F)
+- 0 = Panning L->R
+- 1 = Delay
+- 2 = Panning L<-R
+- 3 = Delay 2
+- 4 = Mono Long
+
+## Example SysEx Messages
+
+### Example 1: Request User Patch A11
+```
+F0 41 10 00 06 11 02 00 00 00 00 00 01 78 6D F7
+│  │  │  │  │  │  │           │           │  └── EOX
+│  │  │  │  │  │  │           │           └───── Checksum
+│  │  │  │  │  │  │           └───────────────── Size (0x178 = 248 bytes)
+│  │  │  │  │  │  └─────────────────────────── Address (02 00 00 00)
+│  │  │  │  │  └────────────────────────────── Command (11 = RQ1)
+│  │  │  │  └───────────────────────────────── Model ID (00 06)
+│  │  │  └──────────────────────────────────── Device ID (10)
+│  │  └─────────────────────────────────────── Manufacturer (41 = Roland)
+│  └────────────────────────────────────────── SysEx Start
+```
+
+### Example 2: Send Patch Data to User A12
+```
+F0 41 10 00 06 12 02 00 02 00 [248 bytes of patch data] [checksum] F7
+│  │  │  │  │  │  │
+│  │  │  │  │  │  └─ Address 02 00 02 00 (User Patch A12)
+│  │  │  │  │  └──── Command 12 (DT1)
+│  │  │  │  └─────── Model ID 00 06
+│  │  │  └────────── Device ID 10
+│  │  └───────────── Manufacturer 41
+│  └──────────────── SysEx Start
+```
+
+## Notes
+
+1. **Data Size Limits**: Data larger than 256 bytes should be split into
+   multiple messages with at least 20ms delay between them.
+
+2. **Device ID**: The default device ID is 0x10 (16), but can be configured
+   on the JP-8080 from 0x00 to 0x1F.
+
+3. **Model ID**: The JP-8080 uses model ID [00 06]. The JP-8000 keyboard
+   version uses the same engine and MIDI implementation.
+
+4. **Address Alignment**: Patch addresses must be aligned to 0x200 boundaries
+   (i.e., last byte must be 00).
+
+5. **ASCII Characters**: Patch names use ASCII characters from 0x20 (space)
+   to 0x7D ('}'), padded with spaces if needed.
+
+## References
+
+- Roland JP-8080 Owner's Manual (MIDI Implementation section)
+- Roland MIDI Implementation Chart
