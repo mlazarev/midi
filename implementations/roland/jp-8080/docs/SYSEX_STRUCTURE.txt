@@ -9,6 +9,20 @@ for the Roland JP-8080 synthesizer.
 The JP-8080 uses Roland's standard DT1 (Data Set 1) and RQ1 (Data Request 1)
 SysEx format for patch and system parameter communication.
 
+> **JP-8000 Compatibility**
+>
+> The keyboard counterpart (JP-8000) shares this architecture and sends the
+> same parameter bytes. When it transmits a “performance temporary” dump,
+> each editable patch is delivered as one or two DT1 packets under the
+> `01 00 xx xx` address space instead of the user-patch block (`02 00 xx xx`)
+> and the payload is 239 bytes long because the rack-only parameters (unison,
+> gain, external trigger) do not exist. To obtain a canonical 248-byte patch
+> simply concatenate the primary payload at `01 00 40 00` (upper) or
+> `01 00 42 00` (lower) with the optional extension message at
+> `01 00 41 72` (contains unison/gain bytes on JP-8080). The tools in this
+> repository perform that reassembly and pad the missing bytes with safe
+> defaults automatically.
+
 ## SysEx Message Format
 
 ### Data Set 1 (DT1) - Send Data to JP-8080

@@ -19,6 +19,8 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 PATCH_SIZE = 248  # 0x178 bytes per patch
 ROLAND_MANUFACTURER = 0x41
 JP8080_MODEL_ID = [0x00, 0x06]
+MIN_PATCH_PAYLOAD = 200  # heuristic guardrail for identifying patch payloads
+PATCH_EXTENSION_OFFSET = 0x172  # 370 decimal (offset where extension bytes live)
 
 
 @dataclass
@@ -83,6 +85,117 @@ def decode_roland_sysex(data: bytes) -> Tuple[SysexHeader, bytes, int]:
     )
 
     return header, payload_data, address
+
+
+def _split_sysex_messages(blob: bytes) -> List[bytes]:
+    """Return a list of raw SysEx messages contained in the given blob."""
+    messages: List[bytes] = []
+    start = 0
+    length = len(blob)
+    while start < length:
+        try:
+            f0 = blob.index(0xF0, start)
+        except ValueError:
+            break
+        try:
+            f7 = blob.index(0xF7, f0)
+        except ValueError:
+            break
+        # Include terminating F7
+        messages.append(blob[f0 : f7 + 1])
+        start = f7 + 1
+    return messages
+
+
+def _pad_patch_payload(data: bytes) -> bytes:
+    """Pad or trim payload to the canonical PATCH_SIZE."""
+    if len(data) >= PATCH_SIZE:
+        return data[:PATCH_SIZE]
+    return data + bytes(PATCH_SIZE - len(data))
+
+
+def _patch_base(address: int) -> int:
+    """Return the 0x200-aligned base address for a patch payload."""
+    return address & ~0x1FF
+
+
+def _address_bytes(address: int) -> Tuple[int, int, int, int]:
+    """Return 4-byte Roland address tuple for ranking/inspection."""
+    return (
+        (address >> 21) & 0x7F,
+        (address >> 14) & 0x7F,
+        (address >> 7) & 0x7F,
+        address & 0x7F,
+    )
+
+
+def _select_patch_payload(
+    decoded: Sequence[Tuple[SysexHeader, bytes, int]]
+) -> Tuple[SysexHeader, bytes, int, List[Dict[str, int]]]:
+    """
+    Given decoded SysEx fragments, locate and reconstruct a single patch payload.
+
+    This allows us to accept both standard JP-8080 patch dumps (0x02...... addresses)
+    and JP-8000 performance-temporary dumps (0x01 00 40 00 / 0x01 00 42 00) where
+    the patch bytes are embedded alongside other part data.
+    """
+    main_segments: Dict[int, Tuple[SysexHeader, bytes, int]] = {}
+    extension_segments: Dict[int, Tuple[SysexHeader, bytes, int]] = {}
+
+    for header, payload, address in decoded:
+        base = _patch_base(address)
+        offset = address - base
+
+        if offset == 0:
+            # Heuristically gate on payload size so we don't treat perf-common
+            # or part blocks as patches.
+            if len(payload) >= MIN_PATCH_PAYLOAD:
+                main_segments[base] = (header, payload, address)
+        elif offset == PATCH_EXTENSION_OFFSET:
+            extension_segments[base] = (header, payload, address)
+
+    if not main_segments:
+        raise ValueError("No JP-8000/JP-8080 patch payload found in SysEx data")
+
+    def _area_rank(base: int) -> Tuple[int, int]:
+        msb, _, third, _ = _address_bytes(base)
+        if msb == 0x02:
+            # User patch area (preferred)
+            return (0, third)
+        if msb == 0x01 and third in (0x40, 0x42):
+            # Performance temporary patch (upper vs lower)
+            return (1 if third == 0x40 else 2, third)
+        # Anything else (system/performance common) should be last resort.
+        return (3, third)
+
+    base = min(main_segments.keys(), key=_area_rank)
+    header_main, payload, address = main_segments[base]
+    segments: List[Dict[str, int]] = [
+        {
+            "address": address,
+            "length": len(payload),
+            "device_id": header_main.device_id,
+            "command": header_main.command,
+            "start": 0,
+        }
+    ]
+
+    extension_payload = b""
+    if base in extension_segments:
+        header_ext, ext_payload, ext_address = extension_segments[base]
+        extension_payload = ext_payload
+        segments.append(
+            {
+                "address": ext_address,
+                "length": len(ext_payload),
+                "device_id": header_ext.device_id,
+                "command": header_ext.command,
+                "start": len(payload),
+            }
+        )
+
+    combined = _pad_patch_payload(payload + extension_payload)
+    return header_main, combined, address, segments
 
 
 def encode_roland_sysex(
@@ -428,12 +541,35 @@ def slot_name(index: int) -> str:
 def load_patch_from_sysex(path: Path) -> Tuple[SysexHeader, JP8080Patch, int]:
     """Load a single patch from a SysEx file."""
     data = path.read_bytes()
-    header, payload, address = decode_roland_sysex(data)
+    messages = _split_sysex_messages(data)
 
-    if len(payload) < PATCH_SIZE:
-        raise ValueError(f"Payload too small: {len(payload)} bytes, expected {PATCH_SIZE}")
+    if not messages:
+        raise ValueError("No SysEx messages found in file")
 
+    # Fast-path: most JP-8080 exports are a single DT1 message
+    if len(messages) == 1:
+        header, payload, address = decode_roland_sysex(messages[0])
+        if len(payload) < MIN_PATCH_PAYLOAD:
+            raise ValueError(
+                f"Payload too small: {len(payload)} bytes, expected at least {MIN_PATCH_PAYLOAD}"
+            )
+        patch = JP8080Patch(_pad_patch_payload(payload))
+        patch._source_segments = [
+            {
+                "address": address,
+                "length": len(payload),
+                "device_id": header.device_id,
+                "command": header.command,
+                "start": 0,
+            }
+        ]
+        return header, patch, address
+
+    # Multi-message files (JP-8000 librarian exports, bulk fragments, etc.)
+    decoded = [decode_roland_sysex(msg) for msg in messages]
+    header, payload, address, segments = _select_patch_payload(decoded)
     patch = JP8080Patch(payload)
+    patch._source_segments = segments  # type: ignore[attr-defined]
     return header, patch, address
 
 

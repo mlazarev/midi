@@ -112,6 +112,28 @@ Dependencies for MIDI send:
 pip install mido python-rtmidi
 ```
 
+## JP-8000 Compatibility
+
+The JP-8080 shares its analog-modelling engine and MIDI implementation with the
+JP-8000 keyboard. Many JP-8000 librarian exports contain multiple DT1 packets
+per patch (performance common + parts + the editable patch bytes at addresses
+`01 00 40 00` / `01 00 42 00`) and the patch payload itself is nine bytes shorter
+because the rack-only unison/gain parameters do not exist.
+
+All CLI commands now run through a loader that reassembles those JP-8000 files:
+- Every DT1 packet in a file is decoded, patch segments are stitched back together,
+  and the shorter payloads are padded to the JP-8080’s 248-byte layout.
+- Both the modern CLI (`jp8080_cli.py`) and the legacy scripts (`roundtrip_test.py`,
+  `extract_from_bulk.py`, etc.) therefore accept JP-8000 and JP-8080 dumps without
+  any manual conversions.
+- The additional JP-8080-only parameters (unison, detune, gain, external trigger)
+  are initialised to safe defaults when importing a JP-8000 patch so you can still
+  encode the JSON back to a valid JP-8080 SysEx file.
+
+If you point any command at a full JP-8080 bulk dump, use `extract_from_bulk.py`
+first to split out the 128 user-bank patches; the compatibility shim only targets
+the multi-packet “single patch” files that JP-8000 editors typically produce.
+
 ## SysEx File Format
 
 ### Message Structure (DT1 - Data Set 1)
