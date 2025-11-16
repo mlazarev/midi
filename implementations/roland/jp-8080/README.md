@@ -1,4 +1,4 @@
-```# Roland JP-8080 SysEx Tools & Documentation
+# Roland JP-8080 SysEx Tools & Documentation
 
 Complete tools and documentation for working with Roland JP-8080 synthesizer MIDI System Exclusive (SysEx) files.
 
