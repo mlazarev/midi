@@ -28,8 +28,7 @@ jp-8080/
 │   │   └── jp8080_core.py      # Decode/encode utilities
 │   └── scripts/                # Standalone helpers
 │       ├── copy_patch.py
-│       ├── roundtrip_test.py
-│       └── send_to_jp8080.py
+│       └── roundtrip_test.py
 ├── patches/                     # Patch files
 │   └── factory/                # (Factory presets - to be added)
 └── examples/                    # Example outputs
@@ -96,15 +95,13 @@ Voice Settings:
 
 ### Send SysEx to JP-8080
 ```bash
-# List available MIDI outputs
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py --list-outputs
+# List available MIDI outputs (requires: pip install mido python-rtmidi)
+python3 tools/send_sysex.py --list-outputs
 
-# Send patch to JP-8080
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py patch.syx
-
-# Specify MIDI port and delay
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py \
-        --out "JP-8080 MIDI 1" --delay-ms 50 patch.syx
+# Send a JP-8080 patch or bulk dump
+python3 tools/send_sysex.py \
+        --file implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx \
+        --out "JP-8080" --delay-ms 50
 ```
 
 Dependencies for MIDI send:
@@ -248,22 +245,19 @@ Useful for:
 - Moving patches to different slots
 - Backing up individual patches
 
-### send_to_jp8080.py
+### Sending SysEx
 
-Send SysEx patches to the JP-8080 via MIDI.
+Use the shared `tools/send_sysex.py` helper to transmit JP-8080 patches or bulk dumps. It automatically splits multi-message `.syx` files, preserving the two-packet-per-patch layout documented above.
 
 ```bash
-# Auto-detect JP-8080 MIDI port
-python3 scripts/send_to_jp8080.py patch.syx
-
-# Specify port explicitly
-python3 scripts/send_to_jp8080.py --out "JP-8080 MIDI 1" patch.syx
-
-# Add delay for slow interfaces
-python3 scripts/send_to_jp8080.py --delay-ms 100 patch.syx
+python3 tools/send_sysex.py --list-outputs
+python3 tools/send_sysex.py --file implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx --out "JP-8080" --delay-ms 50
 ```
 
-Requires: `pip install mido python-rtmidi`
+Tips:
+- JP-8080 MIDI interfaces often show up as `EDIROL`, `JP8080`, or similar—pass any substring to `--out`.
+- Set `--delay-ms` to 50–100 when sending large bulk dumps to avoid overrunning slower DIN interfaces.
+- The tool enforces F0...F7 framing, catching truncated exports before they reach the synth.
 
 ### roundtrip_test.py
 

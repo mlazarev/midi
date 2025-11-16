@@ -125,10 +125,10 @@ python3 implementations/korg/ms2000/tools/ms2000_cli.py encode \
 **5. Send a SysEx file to hardware:**
 ```bash
 # List MIDI outputs
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
+python3 tools/send_sysex.py --list-outputs
 
 # Send a .syx file (requires 'mido' + 'python-rtmidi')
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py \
+python3 tools/send_sysex.py \
     --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
     --out "MS2000" --delay-ms 50
 ```
