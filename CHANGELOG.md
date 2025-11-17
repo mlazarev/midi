@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v1.4.0 (2025-11-17)
+
 - Removed the per-synth `send_to_ms2000.py` and `send_to_jp8080.py` wrappers—use the shared `tools/send_sysex.py` helper for all hardware transfers.
 
 # v1.3.0 (2025-10-25)
