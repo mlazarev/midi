@@ -1,6 +1,6 @@
-# Roland JP-8080 SysEx Tools & Documentation
+# Roland JP-8080 / JP-8000 SysEx Tools & Documentation
 
-Complete tools and documentation for working with Roland JP-8080 synthesizer MIDI System Exclusive (SysEx) files.
+Complete tools and documentation for working with Roland JP-8080 synthesizer MIDI System Exclusive (SysEx) files, with full compatibility for JP-8000 librarian exports.
 
 ## Overview
 

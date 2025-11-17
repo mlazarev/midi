@@ -1,7 +1,8 @@
-# General MIDI + Korg MS2000 SysEx Tools and Patch Generation
+# General MIDI + SysEx Tools (Korg MS2000, Roland JP-8000/8080)
 
-Practical tools and curated content for Korg MS2000/MS2000R sound designers and developers:
-- Generate, analyze, and send complete 128‑program banks
+Practical tools and curated content for hardware synth users:
+- Generate, analyze, and send complete 128‑program banks (Korg MS2000)
+- Decode, edit, and transmit Roland JP-8080/JP-8000 patches and bulk dumps
 - Prototype and iterate on custom sound-design banks
 - Decode and export factory banks for inspection and tooling
 
@@ -36,7 +37,9 @@ Located in [`docs/general/`](docs/general/):
   - Bit manipulation formulas
   - Common code snippets
 
-## 🔧 Korg MS2000/MS2000R
+## 🔧 Synth Coverage
+
+### Korg MS2000/MS2000R
 
 [![MS2000](https://img.shields.io/badge/Korg-MS2000-red)](implementations/korg/ms2000/)
 
@@ -58,6 +61,14 @@ python3 decode_sysex.py ../patches/factory/FactoryBanks.syx
 
 See [MS2000 README](implementations/korg/ms2000/README.md) for full documentation.
 
+### Roland JP-8080 / JP-8000
+
+[JP-8080 Docs](implementations/roland/jp-8080/README.md)
+
+- Full SysEx decoder/encoder for JP-8080 with compatibility layer for JP-8000 multi-packet exports
+- Handles dual-message JP-8080 patches and stitches JP-8000 segments into JP-8080-safe payloads
+- Analyze, copy, extract-from-bulk, and send patches via the shared `tools/send_sysex.py`
+
 ## 🏗️ Repository Structure
 
 ```
@@ -72,21 +83,29 @@ midi-sysex-learning/
 │       └── QUICK_REFERENCE.md         # Quick lookup tables
 │
 └── implementations/                   # Device-specific implementations
-    └── korg/                          # Korg manufacturer
-        └── ms2000/                    # MS2000 synthesizer
-            ├── README.md              # MS2000-specific documentation
+    ├── korg/                          # Korg manufacturer
+    │   └── ms2000/                    # MS2000 synthesizer
+    │       ├── README.md              # MS2000-specific documentation
+    │       ├── docs/                  # Technical specifications
+    │       ├── tools/                 # Python tools
+    │       ├── patches/               # SysEx patch files
+    │       └── examples/              # Example outputs
+    └── roland/
+        └── jp-8080/                   # JP-8080/JP-8000 synthesizers
+            ├── README.md              # JP-specific documentation
             ├── docs/                  # Technical specifications
             ├── tools/                 # Python tools
-            ├── patches/               # SysEx patch files
-            └── examples/              # Example outputs
+            ├── patches/               # (factory presets TBD)
+            └── examples/              # Example outputs and dumps
 ```
 
-## 🚀 Getting Started (MS2000)
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Python 3.7 or higher
-- No external dependencies (uses standard library only)
+- No external dependencies for decoding/analysis (uses standard library only)
+- Sending SysEx requires: `pip install mido python-rtmidi`
 
 ### Installation
 
@@ -104,33 +123,39 @@ cd midi-sysex-learning
 cat docs/general/LEARNING_SUMMARY.md
 ```
 
-**2. Decode a SysEx file (Factory):**
+**2. Decode a SysEx file (Factory, MS2000 example):**
 ```bash
 python3 implementations/korg/ms2000/tools/ms2000_cli.py \
         inspect implementations/korg/ms2000/patches/factory/FactoryBanks.syx --limit 8
 ```
 
-**3. Compare two patch banks:**
+**3. Decode and analyze a JP-8080/JP-8000 patch:**
+```bash
+python3 implementations/roland/jp-8080/tools/jp8080_cli.py \
+        inspect implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx
+```
+
+**4. Compare two patch banks (MS2000 example):**
 ```bash
 python3 implementations/korg/ms2000/tools/ms2000_cli.py compare file1.syx file2.syx
 ```
 
-**4. Encode JSON back to .syx (optional):**
+**5. Encode JSON back to .syx (optional, MS2000 example):**
 ```bash
 python3 implementations/korg/ms2000/tools/ms2000_cli.py encode \
         implementations/korg/ms2000/examples/factory_banks.json \
         /tmp/factory_roundtrip.syx --template implementations/korg/ms2000/patches/factory/FactoryBanks.syx
 ```
 
-**5. Send a SysEx file to hardware:**
+**6. Send a SysEx file to hardware (all synths):**
 ```bash
 # List MIDI outputs
 python3 tools/send_sysex.py --list-outputs
 
 # Send a .syx file (requires 'mido' + 'python-rtmidi')
 python3 tools/send_sysex.py \
-    --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
-    --out "MS2000" --delay-ms 50
+    --file implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx \
+    --out "JP-8080" --delay-ms 50
 ```
 
 ## 📖 Learning Path (Optional)
@@ -263,6 +288,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 
 - **MIDI Specification** - MIDI Manufacturers Association
 - **Korg** - MS2000 MIDI Implementation documentation
+- **Roland** - JP-8000/JP-8080 MIDI implementation documentation
 - **Sound on Sound** - Educational articles on SysEx
 - **Open source community** - Python, Git, and various tools
 
@@ -286,6 +312,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 ### Current Status
 - ✅ Complete MIDI/SysEx educational documentation
 - ✅ Korg MS2000 implementation with tools
+- ✅ Roland JP-8080/JP-8000 implementation with tools
 - ✅ 7-to-8 bit encoding/decoding
 - ✅ Patch parameter extraction (partial)
 
