@@ -30,6 +30,11 @@ desktop.ini
 **/*_proprietary.*
 **/BOCPatches.syx
 BOCPatches.syx
+implementations/roland/jp-8080/docs/JP-8000_OM.pdf
+implementations/roland/jp-8080/docs/JP-8000_OM.txt
+implementations/roland/jp-8080/docs/JP-8080_OM.pdf
+implementations/roland/jp-8080/docs/JP-8080_OM.txt
+implementations/roland/jp-8080/examples/jp8000-bl/
 
 # Native Instruments - excluded due to DMCA concerns
 # (Reverse-engineered format documentation for educational/interop purposes only)

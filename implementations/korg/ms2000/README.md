@@ -40,8 +40,7 @@ ms2000/
 │   │   └── fix_sysex.py
 │   ├── scripts/               # Standalone helpers
 │   │   ├── copy_patch.py
-│   │   ├── roundtrip_test.py
-│   │   └── send_to_ms2000.py
+│   │   └── roundtrip_test.py
 │   └── docs/                  # Tool-specific documentation
 │       └── README_DECODE_PARAMETERS.md
 ├── patches/                     # Patch files
@@ -82,15 +81,13 @@ python3 implementations/korg/ms2000/tools/ms2000_cli.py compare file1.syx file2.
 
 ### Send SysEx to MS2000
 ```bash
-# List available MIDI outputs
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
+# List available MIDI outputs (requires: pip install mido python-rtmidi)
+python3 tools/send_sysex.py --list-outputs
 
-# Send the bundled factory bank to a port containing "MS2000"
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py
-
-# Override port and delay (requires: pip install mido python-rtmidi)
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py \
-        --out "Your MIDI Port" --delay-ms 50
+# Send the bundled factory bank to any output containing "MS2000"
+python3 tools/send_sysex.py \
+        --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx \
+        --out "MS2000" --delay-ms 50
 ```
 
 ## SysEx File Format
@@ -195,24 +192,19 @@ python3 implementations/korg/ms2000/tools/wrappers/compare_patches.py \
         <file1.syx> <file2.syx> [--patch-index N] [--json]
 ```
 
-### send_to_ms2000.py
+### Sending SysEx
 
-Send a SysEx file to MS2000/MS2000R. Thin wrapper around top‑level `tools/send_sysex.py` with sane defaults.
+Use the shared `tools/send_sysex.py` helper to transmit any `.syx` file:
 
-Dependencies:
-- Python 3.8+
-- `mido`, `python-rtmidi` (`pip install mido python-rtmidi`)
-
-Defaults:
-- `--out "MS2000"`, `--file ../patches/factory/FactoryBanks.syx`, `--delay-ms 50`
-
-Usage:
 ```bash
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --list-outputs
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py                     # send bundled factory bank
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --out "Your Port"   # choose a specific output
-python3 implementations/korg/ms2000/tools/scripts/send_to_ms2000.py --file path\to\file.syx --delay-ms 50
+python3 tools/send_sysex.py --list-outputs
+python3 tools/send_sysex.py --file implementations/korg/ms2000/patches/factory/FactoryBanks.syx --out "MS2000" --delay-ms 50
 ```
+
+Tips:
+- `--out` accepts a case-insensitive substring, so `"MS2000"` matches USB or DIN outputs that include the name.
+- Use `--delay-ms` when a file contains multiple SysEx messages and your interface needs time between them.
+- `--auto-fix` can repair dumps that are missing the terminal F7 byte.
 
 ### fix_sysex.py
 

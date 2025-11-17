@@ -28,8 +28,7 @@ jp-8080/
 │   │   └── jp8080_core.py      # Decode/encode utilities
 │   └── scripts/                # Standalone helpers
 │       ├── copy_patch.py
-│       ├── roundtrip_test.py
-│       └── send_to_jp8080.py
+│       └── roundtrip_test.py
 ├── patches/                     # Patch files
 │   └── factory/                # (Factory presets - to be added)
 └── examples/                    # Example outputs
@@ -96,21 +95,41 @@ Voice Settings:
 
 ### Send SysEx to JP-8080
 ```bash
-# List available MIDI outputs
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py --list-outputs
+# List available MIDI outputs (requires: pip install mido python-rtmidi)
+python3 tools/send_sysex.py --list-outputs
 
-# Send patch to JP-8080
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py patch.syx
-
-# Specify MIDI port and delay
-python3 implementations/roland/jp-8080/tools/scripts/send_to_jp8080.py \
-        --out "JP-8080 MIDI 1" --delay-ms 50 patch.syx
+# Send a JP-8080 patch or bulk dump
+python3 tools/send_sysex.py \
+        --file implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx \
+        --out "JP-8080" --delay-ms 50
 ```
 
 Dependencies for MIDI send:
 ```bash
 pip install mido python-rtmidi
 ```
+
+## JP-8000 Compatibility
+
+The JP-8080 shares its analog-modelling engine and MIDI implementation with the
+JP-8000 keyboard. Many JP-8000 librarian exports contain multiple DT1 packets
+per patch (performance common + parts + the editable patch bytes at addresses
+`01 00 40 00` / `01 00 42 00`) and the patch payload itself is nine bytes shorter
+because the rack-only unison/gain parameters do not exist.
+
+All CLI commands now run through a loader that reassembles those JP-8000 files:
+- Every DT1 packet in a file is decoded, patch segments are stitched back together,
+  and the shorter payloads are padded to the JP-8080’s 248-byte layout.
+- Both the modern CLI (`jp8080_cli.py`) and the legacy scripts (`roundtrip_test.py`,
+  `extract_from_bulk.py`, etc.) therefore accept JP-8000 and JP-8080 dumps without
+  any manual conversions.
+- The additional JP-8080-only parameters (unison, detune, gain, external trigger)
+  are initialised to safe defaults when importing a JP-8000 patch so you can still
+  encode the JSON back to a valid JP-8080 SysEx file.
+
+If you point any command at a full JP-8080 bulk dump, use `extract_from_bulk.py`
+first to split out the 128 user-bank patches; the compatibility shim only targets
+the multi-packet “single patch” files that JP-8000 editors typically produce.
 
 ## SysEx File Format
 
@@ -226,22 +245,19 @@ Useful for:
 - Moving patches to different slots
 - Backing up individual patches
 
-### send_to_jp8080.py
+### Sending SysEx
 
-Send SysEx patches to the JP-8080 via MIDI.
+Use the shared `tools/send_sysex.py` helper to transmit JP-8080 patches or bulk dumps. It automatically splits multi-message `.syx` files, preserving the two-packet-per-patch layout documented above.
 
 ```bash
-# Auto-detect JP-8080 MIDI port
-python3 scripts/send_to_jp8080.py patch.syx
-
-# Specify port explicitly
-python3 scripts/send_to_jp8080.py --out "JP-8080 MIDI 1" patch.syx
-
-# Add delay for slow interfaces
-python3 scripts/send_to_jp8080.py --delay-ms 100 patch.syx
+python3 tools/send_sysex.py --list-outputs
+python3 tools/send_sysex.py --file implementations/roland/jp-8080/examples/wc_olo_garb_jp8080.syx --out "JP-8080" --delay-ms 50
 ```
 
-Requires: `pip install mido python-rtmidi`
+Tips:
+- JP-8080 MIDI interfaces often show up as `EDIROL`, `JP8080`, or similar—pass any substring to `--out`.
+- Set `--delay-ms` to 50–100 when sending large bulk dumps to avoid overrunning slower DIN interfaces.
+- The tool enforces F0...F7 framing, catching truncated exports before they reach the synth.
 
 ### roundtrip_test.py
 

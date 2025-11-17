@@ -27,6 +27,8 @@ from jp8080_core import (  # type: ignore
     load_patch_from_sysex,
     encode_patch_to_sysex,
     PATCH_SIZE,
+    decode_roland_sysex,
+    _split_sysex_messages,
 )
 
 
@@ -74,7 +76,19 @@ def roundtrip_test(file_path: Path, verbose: bool = False) -> bool:
             print(f"Device ID: 0x{header.device_id:02X}")
             print()
 
-        # Re-encode with same parameters
+        segments = getattr(
+            patch,
+            "_source_segments",
+            [
+                {
+                    "address": address,
+                    "length": len(patch.raw_data),
+                    "start": 0,
+                }
+            ],
+        )
+
+        # Re-encode with same parameters (canonical single-patch message)
         reconstructed_sysex = encode_patch_to_sysex(
             patch.raw_data,
             address=address,
@@ -82,59 +96,99 @@ def roundtrip_test(file_path: Path, verbose: bool = False) -> bool:
         )
 
         # Compare
+        original_messages = _split_sysex_messages(original_sysex)
+        multi_packet = (
+            len(original_messages) > 1
+            or len(segments) > 1
+            or len(original_sysex) != len(reconstructed_sysex)
+        )
         print("Comparing original and reconstructed SysEx...")
 
-        # Check header (first 10 bytes: F0 41 [dev] 00 06 12 [addr*4])
-        print("\n1. Header (first 10 bytes):")
-        if compare_bytes(original_sysex[:10], reconstructed_sysex[:10]):
-            print("✓ Header matches")
-        else:
-            return False
+        if not multi_packet:
+            # Original was a single DT1 patch dump (JP-8080 format)
+            print("\n1. Header (first 10 bytes):")
+            if compare_bytes(original_sysex[:10], reconstructed_sysex[:10]):
+                print("✓ Header matches")
+            else:
+                return False
 
-        # Check payload (patch data)
-        orig_payload = original_sysex[10:-2]  # Skip header and checksum+F7
-        recon_payload = reconstructed_sysex[10:-2]
+            orig_payload = original_sysex[10:-2]
+            recon_payload = reconstructed_sysex[10:-2]
 
-        print("\n2. Patch data payload:")
-        if compare_bytes(orig_payload, recon_payload):
-            print(f"✓ Patch data matches ({len(orig_payload)} bytes)")
-        else:
-            return False
+            print("\n2. Patch data payload:")
+            if compare_bytes(orig_payload, recon_payload):
+                print(f"✓ Patch data matches ({len(orig_payload)} bytes)")
+            else:
+                return False
 
-        # Check checksum
-        print("\n3. Checksum:")
-        orig_checksum = original_sysex[-2]
-        recon_checksum = reconstructed_sysex[-2]
+            print("\n3. Checksum:")
+            orig_checksum = original_sysex[-2]
+            recon_checksum = reconstructed_sysex[-2]
 
-        if orig_checksum == recon_checksum:
-            print(f"✓ Checksum matches (0x{orig_checksum:02X})")
-        else:
-            print(f"✗ Checksum mismatch: 0x{orig_checksum:02X} vs 0x{recon_checksum:02X}")
-            return False
+            if orig_checksum == recon_checksum:
+                print(f"✓ Checksum matches (0x{orig_checksum:02X})")
+            else:
+                print(f"✗ Checksum mismatch: 0x{orig_checksum:02X} vs 0x{recon_checksum:02X}")
+                return False
 
-        # Check terminator
-        print("\n4. SysEx terminator (F7):")
-        if original_sysex[-1] == 0xF7 and reconstructed_sysex[-1] == 0xF7:
-            print("✓ Terminator present")
-        else:
-            print("✗ Terminator missing or incorrect")
-            return False
+            print("\n4. SysEx terminator (F7):")
+            if original_sysex[-1] == 0xF7 and reconstructed_sysex[-1] == 0xF7:
+                print("✓ Terminator present")
+            else:
+                print("✗ Terminator missing or incorrect")
+                return False
 
-        # Overall comparison
-        print("\n5. Complete message:")
-        if compare_bytes(original_sysex, reconstructed_sysex):
-            print("✓ Complete round-trip successful!")
+            print("\n5. Complete message:")
+            if compare_bytes(original_sysex, reconstructed_sysex):
+                print("✓ Complete round-trip successful!")
+                print()
+                print("=" * 60)
+                print("ROUND-TRIP TEST: PASSED ✓")
+                print("=" * 60)
+                return True
+            else:
+                print()
+                print("=" * 60)
+                print("ROUND-TRIP TEST: FAILED ✗")
+                print("=" * 60)
+                return False
+
+        # Multi-message (JP-8000 performance temp or similar)
+        print("\nDetected non-canonical SysEx (JP-8000/performance export).")
+        decoded_segments = [decode_roland_sysex(msg) for msg in original_messages]
+        payload_by_address = {addr: payload for _, payload, addr in decoded_segments}
+
+        success = True
+        for segment in segments:
+            addr = segment["address"]
+            length = segment["length"]
+            start = segment.get("start", 0)
+            orig_payload = payload_by_address.get(addr)
+            new_payload = patch.raw_data[start : start + length]
+
+            print(f"\nSegment @ 0x{addr:08X} ({length} bytes):")
+            if orig_payload is None:
+                print("✗ Missing in original file; cannot verify")
+                success = False
+                continue
+
+            if orig_payload == new_payload:
+                print("✓ Payload matches original")
+            else:
+                print("✗ Payload mismatch detected")
+                success = False
+
+        if success:
             print()
             print("=" * 60)
-            print("ROUND-TRIP TEST: PASSED ✓")
+            print("ROUND-TRIP TEST (JP-8000 format): PASSED ✓")
             print("=" * 60)
-            return True
         else:
             print()
             print("=" * 60)
-            print("ROUND-TRIP TEST: FAILED ✗")
+            print("ROUND-TRIP TEST (JP-8000 format): FAILED ✗")
             print("=" * 60)
-            return False
+        return success
 
     except Exception as e:
         print(f"\n✗ Error during round-trip test: {e}")

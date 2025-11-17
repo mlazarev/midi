@@ -1,6 +1,6 @@
 # Project Status & Roadmap
 
-Version: v1.3.0
+Version: v1.4.0
 
 ## ✅ Completed
 
@@ -12,10 +12,10 @@ Version: v1.3.0
   - [x] `decode_sysex.py` — legacy wrapper (inspect)
   - [x] `analyze_patch_bank.py` — legacy wrapper (stats summary)
   - [x] `compare_patches.py` — patch diffs (wrapper)
-  - [x] `send_to_ms2000.py` — convenience sender
   - [x] `copy_patch.py` — duplicate within bank
   - [x] `export_single_program.py` — 0x40 single‑program dumps (v1/v2)
   - [x] `fix_sysex.py` — add F7, strip padding (wrapper)
+  - [x] `tools/send_sysex.py` — shared SysEx sender for all synths
 - [x] Troubleshooting docs updated (encoding variant v2, name corruption, silence)
 - [x] Repo structure reorganized (factory patches + examples JSON)
 
@@ -49,7 +49,7 @@ Version: v1.3.0
 ## 🐛 Known Notes
 
 - Decoder now maps core synth parameters (global FX, timbres, modulation); motion sequencer and vocoder bytes remain opaque but are preserved for round-trips.
-- Sending requires `mido` + `python-rtmidi` if using `send_to_ms2000.py`.
+- Sending requires `mido` + `python-rtmidi` when using `tools/send_sysex.py`.
 
 ## 📊 Project Metrics (informational)
 

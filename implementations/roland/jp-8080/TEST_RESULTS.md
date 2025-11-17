@@ -97,6 +97,20 @@ All extracted patches passed byte-for-byte roundtrip encoding tests:
 - ✅ Preserves all 248 bytes of data
 - ✅ Recalculates checksums correctly
 
+## JP-8000 Librarian Imports
+
+- ✅ Confirmed that JP-8000 single-patch exports (multi-packet DT1 streams living in
+  the Performance Temporary address block `01 00 xx xx`) now decode successfully.
+- ✅ Loader now reassembles the shorter 239-byte payloads, pads the JP-8080-only tail
+  parameters (unison switch, detune, patch gain, external trigger) with safe defaults,
+  and returns a canonical 248-byte patch object that can be re-encoded without loss.
+- ✅ `roundtrip_test.py` passes on synthetic JP-8000 inputs created from the reference
+  `test_patch.syx`, verifying that the new code path is byte-accurate whenever the
+  optional extension packet (`+0x0172`) is present.
+- ⚠️  JP-8000 files that contain the entire user bank must still be split with
+  `extract_from_bulk.py`; the loader only targets “single patch” exports, just like
+  Roland’s front-panel write operation.
+
 ## JSON Export Sample
 
 ```json
